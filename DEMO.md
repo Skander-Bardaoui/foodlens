@@ -3,7 +3,7 @@
 ## Before you start
 
 - `docker compose up --build` is running and the "API online" badge is green.
-- `LLM_API_KEY` (or `LLM_BASE_URL`) is configured, otherwise confident photos return `502`.
+- `LLM_API_KEY` (Groq by default) or `LLM_BASE_URL` is configured, otherwise confident photos return `502`.
 - Two photos are ready on the desktop:
   - a clearly recognizable dish (pizza, sushi, burger, salad, pasta);
   - a photo that will be ambiguous: a tight crop, a dark shot, or a non-food image.

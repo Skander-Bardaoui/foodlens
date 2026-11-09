@@ -97,6 +97,7 @@ class OpenAIChatClient:
 
 
 _PROVIDER_BASE_URLS = {
+    "groq": "https://api.groq.com/openai/v1",
     "openai": "https://api.openai.com/v1",
 }
 

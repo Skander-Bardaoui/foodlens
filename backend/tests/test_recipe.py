@@ -36,8 +36,8 @@ VALID_RECIPE = {
 
 @pytest.fixture(autouse=True)
 def configured_llm(monkeypatch):
-    monkeypatch.setattr(recipe_module.settings, "llm_provider", "openai")
-    monkeypatch.setattr(recipe_module.settings, "llm_model", "gpt-4o-mini")
+    monkeypatch.setattr(recipe_module.settings, "llm_provider", "groq")
+    monkeypatch.setattr(recipe_module.settings, "llm_model", "openai/gpt-oss-120b")
     monkeypatch.setattr(recipe_module.settings, "llm_api_key", SecretStr("test-key"))
     monkeypatch.setattr(recipe_module.settings, "llm_base_url", None)
 
@@ -46,7 +46,9 @@ def chat_response(content: str, status_code: int = 200) -> httpx.Response:
     return httpx.Response(
         status_code,
         json={"choices": [{"message": {"content": content}}]},
-        request=httpx.Request("POST", "https://api.openai.com/v1/chat/completions"),
+        request=httpx.Request(
+            "POST", "https://api.groq.com/openai/v1/chat/completions"
+        ),
     )
 
 
@@ -75,8 +77,8 @@ def test_generate_recipe_returns_validated_recipe(monkeypatch):
     assert recipe.ingredients == VALID_RECIPE["ingredients"]
     assert recipe.steps == VALID_RECIPE["steps"]
     assert len(calls) == 1
-    assert calls[0]["url"] == "https://api.openai.com/v1/chat/completions"
-    assert calls[0]["json"]["model"] == "gpt-4o-mini"
+    assert calls[0]["url"] == "https://api.groq.com/openai/v1/chat/completions"
+    assert calls[0]["json"]["model"] == "openai/gpt-oss-120b"
     assert "Margherita pizza" in calls[0]["json"]["messages"][0]["content"]
     assert calls[0]["timeout"].read == 20.0
 

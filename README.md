@@ -8,7 +8,7 @@ FoodLens identifies a dish from a food photo, shows the model's top-3 prediction
 - Food-101 image classification with a Hugging Face ViT model running on CPU.
 - Top-3 predictions and a confidence score.
 - Uncertainty handling: below 40% confidence the API skips the LLM and returns no recipe.
-- AI recipe generation through any OpenAI-compatible chat-completions endpoint.
+- AI recipe generation through Groq, or any OpenAI-compatible chat-completions endpoint.
 - PostgreSQL persistence through SQLAlchemy and Alembic.
 - Result page with prediction bars, checkable ingredients, numbered steps and delete confirmation.
 - History page with search, sort, infinite scrolling and delete confirmation.
@@ -23,7 +23,7 @@ FoodLens identifies a dish from a food photo, shows the model's top-3 prediction
 | Frontend | React 18, Vite 5, TypeScript, Tailwind CSS 3, React Router, TanStack Query, react-dropzone        |
 | Backend  | FastAPI, Pydantic v2, SQLAlchemy 2, Alembic, psycopg 3, Pillow, httpx                              |
 | ML       | transformers + PyTorch (CPU wheel), `nateraw/food` Food-101 classifier                            |
-| LLM      | OpenAI-compatible chat completions API (OpenAI by default, configurable base URL)                 |
+| LLM      | Groq chat completions by default (OpenAI-compatible, configurable base URL)                       |
 | Database | PostgreSQL 16                                                                                     |
 | Runtime  | Docker Compose (`db`, `api`, `web`)                                                               |
 
@@ -55,8 +55,8 @@ FoodLens identifies a dish from a food photo, shows the model's top-3 prediction
         uncertain response     Recipe prompt
         (no recipe)                 |
                                     v
-                         OpenAI-compatible LLM
-                         (JSON ingredients + steps)
+                         Groq chat completions
+                         (OpenAI-compatible, JSON output)
                                     |
                                     v
                      save row + image, return AnalysisOut
@@ -77,7 +77,7 @@ Request flow:
 ### Prerequisites
 
 - Docker Desktop (Compose v2) with at least 4 GB of free disk space.
-- An API key for an OpenAI-compatible LLM, or a local OpenAI-compatible server.
+- A Groq API key (default), or another OpenAI-compatible LLM endpoint.
 - Two food photos for a manual test (JPG or PNG, under 5 MB each).
 
 ### Steps
@@ -91,8 +91,8 @@ cp .env.example .env
 Open `.env` and set one of:
 
 ```dotenv
-# OpenAI
-LLM_API_KEY=sk-...
+# Groq (default)
+LLM_API_KEY=gsk_...
 
 # or any OpenAI-compatible endpoint
 LLM_BASE_URL=http://host.docker.internal:11434/v1
@@ -140,10 +140,10 @@ docker compose down -v     # also delete PostgreSQL and model caches
 | ---------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
 | `DATABASE_URL`   | `postgresql+psycopg://foodlens:foodlens@db:5432/foodlens`   | SQLAlchemy URL used by the API and Alembic           |
 | `HF_MODEL_ID`    | `nateraw/food`                                              | Hugging Face Food-101 classifier                     |
-| `LLM_PROVIDER`   | `openai`                                                    | Provider name; `openai` is built in                  |
+| `LLM_PROVIDER`   | `groq`                                                      | Provider name; `groq` and `openai` are built in      |
 | `LLM_API_KEY`    | empty                                                       | Required for recipe generation                       |
-| `LLM_MODEL`      | `gpt-4o-mini`                                               | Model name sent to the LLM                           |
-| `LLM_BASE_URL`   | empty                                                       | Override for a local or self-hosted OpenAI API       |
+| `LLM_MODEL`      | `openai/gpt-oss-120b`                                       | Model name sent to the LLM                           |
+| `LLM_BASE_URL`   | empty                                                       | Override for another OpenAI-compatible endpoint      |
 | `MAX_UPLOAD_MB`  | `5`                                                         | Server-side upload limit; keep in sync with the UI   |
 | `UPLOAD_DIR`     | `uploads`                                                   | Image storage directory inside the API container     |
 | `CORS_ORIGINS`   | `http://localhost:5173`                                     | Comma-separated allowed browser origins              |

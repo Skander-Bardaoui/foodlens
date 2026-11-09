@@ -16,10 +16,10 @@ class Settings(BaseSettings):
 
     hf_model_id: str = "nateraw/food"
 
-    llm_provider: str = "openai"
+    llm_provider: str = "groq"
     llm_api_key: SecretStr | None = None
-    llm_model: str = "gpt-4o-mini"
-    # Optional OpenAI-compatible endpoint (useful for local or self-hosted LLMs).
+    llm_model: str = "openai/gpt-oss-120b"
+    # Optional override for another OpenAI-compatible endpoint.
     llm_base_url: str | None = None
 
     cors_origins: str = "http://localhost:5173"
