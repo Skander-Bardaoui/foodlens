@@ -201,10 +201,15 @@ frontend/
 cd frontend
 npm test                    # Vitest + React Testing Library
 npm run test:watch
+npm run lint                # ESLint
 npx playwright install chromium
-npm run test:e2e            # Playwright, Chromium
+npm run test:e2e            # Playwright, Chromium (network-mocked)
+PLAYWRIGHT_BASE_URL=http://127.0.0.1:5173 REAL_API_ORIGIN=http://127.0.0.1:8000 REAL_STACK=1 npm run test:e2e -- e2e/real-stack.spec.ts
 npm run screenshots         # regenerate docs/screenshots (needs npm run dev)
 ```
+
+The real-stack spec is skipped by default. Point it at a running Compose app and set
+`REAL_STACK=1` to exercise the classifier, LLM, PostgreSQL and uploads folder end to end.
 
 The unit suite covers `ConfidenceBadge` boundary values (0.40 and 0.75), `ConfirmDialog` focus and dismissal behavior, History filtering, sorting, optimistic deletion and rollback, and the `ErrorBoundary` fallback. The Playwright suite covers seeded History search/delete, upload-to-result, and overflow checks at 390, 768 and 1440 px.
 
@@ -345,7 +350,7 @@ VITE_USE_MOCK=true npm run dev
 ```text
 foodlens/
   docker-compose.yml
-  docker-compose.prod.yml           # api + db for production-like runs
+  docker-compose.prod.yml           # nginx frontend + Gunicorn API + PostgreSQL
   .env.example
   README.md
   DEMO.md
@@ -356,6 +361,7 @@ foodlens/
     alembic/
       versions/20261109_0001_create_analyses.py
       versions/20261109_0002_rename_image_url.py
+      versions/20261109_0003_jsonb_payloads.py
     app/
       main.py                     # FastAPI app, lifespan, /uploads mount
       core/config.py              # environment settings
