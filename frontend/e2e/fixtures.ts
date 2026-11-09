@@ -62,6 +62,19 @@ export const SEED_ANALYSES: E2EAnalysis[] = [
     steps: ["Simmer the broth.", "Cook the noodles."],
     created_at: "2026-11-07T12:00:00.000Z",
   }),
+  analysis({
+    id: "seed-4",
+    label: "Cheeseburger",
+    confidence: 0.92,
+    top3: [
+      { label: "Cheeseburger", score: 0.92 },
+      { label: "Bacon burger", score: 0.05 },
+      { label: "Veggie burger", score: 0.03 },
+    ],
+    ingredients: ["brioche bun", "beef patty", "cheddar"],
+    steps: ["Grill the patty.", "Toast the bun and assemble."],
+    created_at: "2026-11-06T12:00:00.000Z",
+  }),
 ];
 
 export async function mockHealth(page: Page): Promise<void> {

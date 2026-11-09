@@ -5,7 +5,7 @@ import { chromium } from "@playwright/test";
 
 import { SEED_ANALYSES, mockHealth, mockHistory } from "../e2e/fixtures.ts";
 
-const baseURL = process.env.SCREENSHOT_BASE_URL ?? "http://127.0.0.1:4174";
+const baseURL = process.env.SCREENSHOT_BASE_URL ?? "http://127.0.0.1:5173";
 const outputDir = path.resolve(process.cwd(), "../docs/screenshots");
 
 await mkdir(outputDir, { recursive: true });
