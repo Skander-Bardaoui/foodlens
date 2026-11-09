@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     llm_provider: str = "openai"
     llm_api_key: SecretStr | None = None
     llm_model: str = "gpt-4o-mini"
+    # Optional OpenAI-compatible endpoint (useful for local or self-hosted LLMs).
+    llm_base_url: str | None = None
 
     cors_origins: str = "http://localhost:5173"
 

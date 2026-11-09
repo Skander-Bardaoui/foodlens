@@ -11,6 +11,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route index element={<UploadPage />} />
         <Route path="result" element={<ResultPage />} />
+        <Route path="result/:id" element={<ResultPage />} />
         <Route path="history" element={<HistoryPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

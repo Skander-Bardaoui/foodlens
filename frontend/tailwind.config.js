@@ -20,6 +20,15 @@ export default {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
       },
+      keyframes: {
+        scan: {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(420%)" },
+        },
+      },
+      animation: {
+        scan: "scan 2.6s ease-in-out infinite",
+      },
     },
   },
   plugins: [],
