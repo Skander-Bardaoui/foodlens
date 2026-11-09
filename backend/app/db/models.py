@@ -2,7 +2,10 @@ from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
 from sqlalchemy import JSON, Boolean, DateTime, Float, String, Uuid, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+JSON_VARIANT = JSON().with_variant(JSONB(), "postgresql")
 
 
 class Base(DeclarativeBase):
@@ -19,11 +22,11 @@ class Analysis(Base):
     label: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     confidence: Mapped[float] = mapped_column(Float, nullable=False)
     uncertain: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    top3: Mapped[list[dict[str, object]]] = mapped_column(JSON, nullable=False)
+    top3: Mapped[list[dict[str, object]]] = mapped_column(JSON_VARIANT, nullable=False)
     ingredients: Mapped[list[str]] = mapped_column(
-        JSON, nullable=False, default=list
+        JSON_VARIANT, nullable=False, default=list
     )
-    steps: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    steps: Mapped[list[str]] = mapped_column(JSON_VARIANT, nullable=False, default=list)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
