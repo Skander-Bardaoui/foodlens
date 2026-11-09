@@ -3,6 +3,7 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.core.logging import request_id_var
 from app.schemas import ErrorBody, ErrorResponse
@@ -16,6 +17,7 @@ NOT_FOUND = "NOT_FOUND"
 RATE_LIMITED = "RATE_LIMITED"
 LLM_FAILURE = "LLM_FAILURE"
 INTERNAL_ERROR = "INTERNAL_ERROR"
+HTTP_ERROR = "HTTP_ERROR"
 
 ERROR_STATUS_CODES: dict[str, int] = {
     INVALID_IMAGE: 400,
@@ -60,6 +62,13 @@ async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
     return error_response(exc.code, exc.message, exc.status_code)
 
 
+async def http_exception_handler(
+    request: Request, exc: StarletteHTTPException
+) -> JSONResponse:
+    code = NOT_FOUND if exc.status_code == 404 else HTTP_ERROR
+    return error_response(code, str(exc.detail), exc.status_code, headers=exc.headers)
+
+
 async def validation_error_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
@@ -93,5 +102,6 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 
 def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(AppError, app_error_handler)
+    app.add_exception_handler(StarletteHTTPException, http_exception_handler)
     app.add_exception_handler(RequestValidationError, validation_error_handler)
     app.add_exception_handler(Exception, unhandled_exception_handler)

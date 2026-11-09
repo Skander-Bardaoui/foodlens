@@ -65,6 +65,15 @@ def test_json_formatter_emits_request_fields_and_traceback():
     assert "ValueError: details" in payload["exception"]
 
 
+def test_unknown_route_returns_error_envelope():
+    response = TestClient(app).get("/api/unknown")
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "error": {"code": "NOT_FOUND", "message": "Not Found"}
+    }
+
+
 def test_cors_allows_configured_origin():
     origin = settings.cors_origin_list[0]
 
