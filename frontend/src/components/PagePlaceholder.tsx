@@ -19,23 +19,25 @@ export default function PagePlaceholder({
   return (
     <section className="space-y-6">
       <div className="flex items-start gap-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-control bg-brand-soft text-brand-deep">
           <Icon className="h-6 w-6" />
         </span>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-brand-600">
+          <p className="font-body text-label-sm font-bold uppercase tracking-widest text-brand-deep">
             {eyebrow}
           </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">
+          <h1 className="mt-1 font-display text-headline-lg-mobile font-bold tracking-tight text-ink md:text-headline-lg">
             {title}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600">{description}</p>
+          <p className="mt-2 max-w-2xl font-body text-body-md text-muted">{description}</p>
         </div>
       </div>
 
-      <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white p-10 text-center">
+      <div className="rounded-card border-2 border-dashed border-faint bg-surface-lowest p-10 text-center">
         {children ?? (
-          <p className="text-sm text-slate-500">This area is reserved for the next milestone.</p>
+          <p className="font-body text-body-sm text-muted">
+            This area is reserved for the next milestone.
+          </p>
         )}
       </div>
     </section>

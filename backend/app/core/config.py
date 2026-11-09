@@ -24,7 +24,7 @@ class Settings(BaseSettings):
 
     cors_origins: str = "http://localhost:5173"
 
-    max_upload_mb: int = 10
+    max_upload_mb: int = 5
     upload_dir: str = "uploads"
 
     @property

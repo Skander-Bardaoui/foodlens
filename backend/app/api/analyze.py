@@ -9,7 +9,7 @@ from PIL import Image
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.db.repository import create_analysis
+from app.db.repository import create_analysis, to_out
 from app.db.session import get_db
 from app.ml.image_utils import ImageTooLargeError, InvalidImageError, validate_image
 from app.ml.recipe import RecipeGenerationError, generate_recipe
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 UNCERTAINTY_THRESHOLD = 0.40
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 
 @router.post(
@@ -67,18 +67,21 @@ def analyze_image(
                 502, "LLM_FAILURE", "Could not generate a recipe. Please try again."
             )
 
-    image_url = _store_image(file_bytes)
+    image_path = _store_image(file_bytes)
 
-    return create_analysis(
+    record = create_analysis(
         db,
-        label=label,
-        confidence=confidence,
-        uncertain=uncertain,
-        top3=top3,
-        ingredients=recipe.ingredients,
-        steps=recipe.steps,
-        image_url=image_url,
+        {
+            "label": label,
+            "confidence": confidence,
+            "uncertain": uncertain,
+            "top3": [item.model_dump() for item in top3],
+            "ingredients": recipe.ingredients,
+            "steps": recipe.steps,
+            "image_path": image_path,
+        },
     )
+    return to_out(record)
 
 
 def _store_image(file_bytes: bytes) -> str:
@@ -86,8 +89,9 @@ def _store_image(file_bytes: bytes) -> str:
     upload_dir.mkdir(parents=True, exist_ok=True)
 
     filename = f"{uuid4().hex}{_image_suffix(file_bytes)}"
-    (upload_dir / filename).write_bytes(file_bytes)
-    return f"/uploads/{filename}"
+    image_path = upload_dir / filename
+    image_path.write_bytes(file_bytes)
+    return str(image_path)
 
 
 def _image_suffix(file_bytes: bytes) -> str:

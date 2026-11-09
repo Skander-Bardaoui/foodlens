@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class HealthResponse(BaseModel):
@@ -21,7 +21,7 @@ class RecipeOut(BaseModel):
 class AnalysisOut(BaseModel):
     id: UUID
     label: str
-    confidence: float
+    confidence: float = Field(ge=0, le=1)
     uncertain: bool
     top3: list[Top3Item]
     ingredients: list[str]
@@ -30,10 +30,15 @@ class AnalysisOut(BaseModel):
     created_at: datetime
 
 
-class ErrorDetail(BaseModel):
+class AnalysisList(BaseModel):
+    items: list[AnalysisOut]
+    total: int
+
+
+class ErrorBody(BaseModel):
     code: str
     message: str
 
 
 class ErrorResponse(BaseModel):
-    error: ErrorDetail
+    error: ErrorBody

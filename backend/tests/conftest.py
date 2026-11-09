@@ -27,3 +27,8 @@ def db_session() -> Iterator[Session]:
     finally:
         session.close()
         engine.dispose()
+
+
+@pytest.fixture
+def db(db_session: Session) -> Iterator[Session]:
+    yield db_session

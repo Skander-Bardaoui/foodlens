@@ -11,9 +11,10 @@ FoodLens identifies a dish from a food photo, shows the model's top-3 prediction
 - AI recipe generation through any OpenAI-compatible chat-completions endpoint.
 - PostgreSQL persistence through SQLAlchemy and Alembic.
 - Result page with prediction bars, checkable ingredients, numbered steps and delete confirmation.
-- History endpoints: list, read and delete analyses.
-- Uploaded images served back to the frontend from `/uploads`.
-- Frontend mock mode for UI work without the API.
+- History page with search, sort, infinite scrolling and delete confirmation.
+- History API with pagination (`limit`, `offset`) and sorting (`newest`, `confidence`).
+- Uploaded images served back to the frontend from `/uploads` and removed with their analysis.
+- Shared design-system components, a styleguide page and frontend mock mode for UI work without the API.
 
 ## Stack
 
@@ -156,9 +157,9 @@ docker compose down -v     # also delete PostgreSQL and model caches
 | -------- | -------------------------- | ------------------------------------------------ |
 | `GET`    | `/api/health`              | Health check                                     |
 | `POST`   | `/api/analyze`             | Multipart image upload; returns the analysis     |
-| `GET`    | `/api/history?limit=20`    | Recent analyses, newest first                    |
+| `GET`    | `/api/history?limit=20&offset=0&sort=newest` | Paginated analyses plus `total` |
 | `GET`    | `/api/history/{id}`        | One analysis                                     |
-| `DELETE` | `/api/history/{id}`        | Delete an analysis                               |
+| `DELETE` | `/api/history/{id}`        | Delete an analysis and its image                 |
 | `GET`    | `/uploads/{filename}`      | Stored image                                     |
 
 Errors use the envelope `{"error": {"code": "...", "message": "..."}}`. `POST /api/analyze` returns 400 for invalid images, 413 for files over the limit, and 502 when recipe generation fails.
@@ -169,6 +170,8 @@ Backend tests use an in-memory SQLite database and mocked classifier/LLM respons
 
 ```bash
 docker compose exec api pytest
+# or, without starting the full stack:
+docker compose run --rm --no-deps api pytest
 ```
 
 Frontend:
@@ -199,6 +202,7 @@ foodlens/
     requirements.txt
     alembic/
       versions/20261109_0001_create_analyses.py
+      versions/20261109_0002_rename_image_url.py
     app/
       main.py                     # FastAPI app, lifespan, /uploads mount
       core/config.py              # environment settings
@@ -221,16 +225,22 @@ foodlens/
       api/history.ts              # history client
       pages/UploadPage.tsx
       pages/ResultPage.tsx
+      pages/HistoryPage.tsx
+      pages/StyleguidePage.tsx
+      components/                 # shared design-system components
       components/AnalyzingView.tsx
+      components/ui/              # adapters for the upload/result pages
 ```
+
+Optional demo data: `docker compose exec api python -m scripts.seed_history --reset`
+ inserts 12 analyses and their images so the History page is populated.
 
 ## Known limitations
 
 - **Only 101 dish types.** The classifier is Food-101, so it can only return one of 101 labels. A non-food photo still gets the closest food label; the app mitigates this by treating scores below 40% as uncertain and skipping the recipe.
 - **LLM recipes may be inaccurate.** Ingredients, quantities and cooking times are generated text, not verified culinary data. Always review them before cooking.
-- Single-user local app: no authentication, accounts, rate limiting or per-user history.
-- Uploaded images are stored on local disk and are not cleaned up automatically. Deleting an analysis removes its database row but not the image file.
-- The History page UI is still a placeholder; the history API is implemented.
+- Single-user local app: no authentication, accounts or rate limiting.
+- Uploaded images are stored on local disk. Deleting an analysis removes its image, but replacing the database without the uploads folder leaves orphaned files.
 - JPEG and PNG only, maximum 5 MB. Large high-resolution phone photos may need resizing.
 - CPU-only inference. The first request downloads the model; later requests are faster but still slower than GPU inference.
 - The LLM is required for confident predictions. Without `LLM_API_KEY` (or a reachable `LLM_BASE_URL`), analyses return `502 LLM_FAILURE`.

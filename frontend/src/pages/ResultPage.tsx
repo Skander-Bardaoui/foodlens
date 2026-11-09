@@ -16,7 +16,8 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { HistoryError, deleteAnalysis, getAnalysis } from "../api/history";
+import { deleteAnalysis, getAnalysis } from "../api/history";
+import { ApiErrorException } from "../api/http";
 import type { Analysis } from "../api/types";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
@@ -30,7 +31,7 @@ export default function ResultPage() {
   const location = useLocation();
   const initialAnalysis = (location.state as ResultLocationState)?.analysis;
 
-  const analysisQuery = useQuery<Analysis, HistoryError>({
+  const analysisQuery = useQuery<Analysis, ApiErrorException>({
     queryKey: ["analysis", id],
     queryFn: () => getAnalysis(id as string),
     enabled: Boolean(id),
@@ -45,7 +46,7 @@ export default function ResultPage() {
   );
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const deleteMutation = useMutation<void, HistoryError, void>({
+  const deleteMutation = useMutation<void, ApiErrorException, void>({
     mutationFn: () => deleteAnalysis(id as string),
     onSuccess: () => {
       setConfirmOpen(false);
@@ -87,7 +88,7 @@ export default function ResultPage() {
     return (
       <ResultError
         message={
-          analysisQuery.error instanceof HistoryError
+          analysisQuery.error instanceof ApiErrorException
             ? analysisQuery.error.message
             : "We couldn't load this analysis. Please try again."
         }
@@ -189,7 +190,7 @@ export default function ResultPage() {
           label={analysis.label}
           pending={deleteMutation.isPending}
           error={
-            deleteMutation.error instanceof HistoryError
+            deleteMutation.error instanceof ApiErrorException
               ? deleteMutation.error.message
               : deleteMutation.error
                 ? "We couldn't delete this analysis. Please try again."

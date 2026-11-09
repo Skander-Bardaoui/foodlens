@@ -1,63 +1,77 @@
+from pathlib import Path, PurePath
+from typing import Literal
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, Response
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy.orm import Session
 
-from app.db.repository import delete_analysis, get_analysis, list_analyses
+from app.core.config import settings
+from app.core.errors import NOT_FOUND, AppError
+from app.db.repository import delete_analysis, get_analysis, list_analyses, to_out
 from app.db.session import get_db
-from app.schemas import AnalysisOut, ErrorResponse
+from app.schemas import AnalysisList, AnalysisOut, ErrorResponse
 
-router = APIRouter(prefix="/history", tags=["history"])
+# owned by Person 2
+router = APIRouter(prefix="/api", tags=["history"])
+
+NOT_FOUND_RESPONSE = {404: {"model": ErrorResponse, "description": "Analysis not found"}}
+VALIDATION_RESPONSE = {422: {"model": ErrorResponse, "description": "Validation error"}}
 
 
 @router.get(
-    "",
-    response_model=list[AnalysisOut],
-    summary="List recent analyses",
+    "/history",
+    response_model=AnalysisList,
+    summary="List past analyses",
+    responses=VALIDATION_RESPONSE,
 )
 def list_history(
-    limit: int = Query(default=20, ge=1, le=100),
+    limit: int = Query(20, ge=1, le=100, description="Maximum number of items to return"),
+    offset: int = Query(0, ge=0, description="Number of items to skip"),
+    sort: Literal["newest", "confidence"] = Query(
+        "newest", description="Ordering of the results"
+    ),
     db: Session = Depends(get_db),
-) -> list[AnalysisOut]:
-    return list_analyses(db, limit=limit)
+) -> AnalysisList:
+    items, total = list_analyses(db, limit=limit, offset=offset, order_by=sort)
+    return AnalysisList(items=[to_out(item) for item in items], total=total)
 
 
 @router.get(
-    "/{analysis_id}",
+    "/history/{analysis_id}",
     response_model=AnalysisOut,
     summary="Get one analysis",
-    responses={404: {"model": ErrorResponse, "description": "Analysis not found"}},
+    responses={**NOT_FOUND_RESPONSE, **VALIDATION_RESPONSE},
 )
-def read_analysis(analysis_id: UUID, db: Session = Depends(get_db)):
+def get_history_item(
+    analysis_id: UUID,
+    db: Session = Depends(get_db),
+) -> AnalysisOut:
     analysis = get_analysis(db, analysis_id)
     if analysis is None:
-        return _not_found()
-    return analysis
+        raise AppError(NOT_FOUND, "Analysis not found", status.HTTP_404_NOT_FOUND)
+    return to_out(analysis)
 
 
 @router.delete(
-    "/{analysis_id}",
-    status_code=204,
-    summary="Delete one analysis",
-    responses={
-        204: {"description": "Analysis deleted"},
-        404: {"model": ErrorResponse, "description": "Analysis not found"},
-    },
+    "/history/{analysis_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete an analysis and its image",
+    responses={**NOT_FOUND_RESPONSE, **VALIDATION_RESPONSE},
 )
-def remove_analysis(analysis_id: UUID, db: Session = Depends(get_db)):
-    if not delete_analysis(db, analysis_id):
-        return _not_found()
-    return Response(status_code=204)
+def delete_history_item(
+    analysis_id: UUID,
+    db: Session = Depends(get_db),
+) -> Response:
+    analysis = get_analysis(db, analysis_id)
+    if analysis is None:
+        raise AppError(NOT_FOUND, "Analysis not found", status.HTTP_404_NOT_FOUND)
 
+    image_file = Path(settings.upload_dir) / PurePath(analysis.image_path).name
+    delete_analysis(db, analysis_id)
 
-def _not_found() -> JSONResponse:
-    return JSONResponse(
-        status_code=404,
-        content={
-            "error": {
-                "code": "NOT_FOUND",
-                "message": "Analysis not found",
-            }
-        },
-    )
+    try:
+        image_file.unlink()
+    except FileNotFoundError:
+        pass
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -1,4 +1,5 @@
 from collections.abc import Iterator
+from pathlib import Path
 from uuid import uuid4
 
 import pytest
@@ -8,7 +9,6 @@ from app.db.models import Analysis
 from app.db.repository import create_analysis
 from app.db.session import get_db
 from app.main import app
-from app.schemas import AnalysisOut, Top3Item
 
 
 @pytest.fixture
@@ -18,20 +18,22 @@ def client(db_session) -> Iterator[TestClient]:
     app.dependency_overrides.pop(get_db, None)
 
 
-def make_analysis(db_session, label: str = "Pizza") -> AnalysisOut:
+def make_analysis(db_session, label: str = "Pizza") -> Analysis:
     return create_analysis(
         db_session,
-        label=label,
-        confidence=0.91,
-        uncertain=False,
-        top3=[
-            Top3Item(label=label, score=0.91),
-            Top3Item(label="Bruschetta", score=0.05),
-            Top3Item(label="Garlic bread", score=0.04),
-        ],
-        ingredients=["500 g dough", "200 g tomatoes"],
-        steps=["Stretch the dough.", "Bake until golden."],
-        image_url=f"/uploads/{label.lower()}.jpg",
+        {
+            "label": label,
+            "confidence": 0.91,
+            "uncertain": False,
+            "top3": [
+                {"label": label, "score": 0.91},
+                {"label": "Bruschetta", "score": 0.05},
+                {"label": "Garlic bread", "score": 0.04},
+            ],
+            "ingredients": ["500 g dough", "200 g tomatoes"],
+            "steps": ["Stretch the dough.", "Bake until golden."],
+            "image_path": f"uploads/{label.lower()}.jpg",
+        },
     )
 
 
@@ -46,6 +48,7 @@ def test_get_analysis_returns_persisted_record(client, db_session):
     assert body["label"] == "Pizza"
     assert body["top3"][0] == {"label": "Pizza", "score": pytest.approx(0.91)}
     assert body["ingredients"] == ["500 g dough", "200 g tomatoes"]
+    assert body["image_url"] == "/uploads/pizza.jpg"
 
 
 def test_get_unknown_analysis_returns_404(client):
@@ -64,12 +67,18 @@ def test_list_history_returns_analyses(client, db_session):
     response = client.get("/api/history")
 
     assert response.status_code == 200
-    ids = {item["id"] for item in response.json()}
+    body = response.json()
+    assert body["total"] == 2
+    ids = {item["id"] for item in body["items"]}
     assert ids == {str(first.id), str(second.id)}
 
 
-def test_delete_analysis_removes_record(client, db_session):
+def test_delete_analysis_removes_record(client, db_session, tmp_path, monkeypatch):
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "upload_dir", str(tmp_path))
     created = make_analysis(db_session)
+    Path(tmp_path, "pizza.jpg").write_bytes(b"image")
 
     response = client.delete(f"/api/history/{created.id}")
 

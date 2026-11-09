@@ -1,17 +1,15 @@
 import { registerMockAnalysis } from "./history";
-import type { Analysis, ApiError } from "./types";
+import { ApiErrorException } from "./http";
+import type { Analysis } from "./types";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
+const API_BASE = import.meta.env.VITE_API_URL ?? "/api";
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
 const MOCK_DELAY_MS = 2_000;
 
-export class AnalyzeError extends Error {
-  readonly code: string;
-
+export class AnalyzeError extends ApiErrorException {
   constructor(code: string, message: string) {
-    super(message);
+    super({ code, message });
     this.name = "AnalyzeError";
-    this.code = code;
   }
 }
 
@@ -51,8 +49,9 @@ async function toAnalyzeError(response: Response): Promise<AnalyzeError> {
     // Non-JSON error body: fall back to the status code below.
   }
 
-  if (isApiError(payload)) {
-    return new AnalyzeError(payload.error.code, payload.error.message);
+  const apiError = extractApiError(payload);
+  if (apiError) {
+    return new AnalyzeError(apiError.code, apiError.message);
   }
 
   if (response.status === 413) {
@@ -68,18 +67,22 @@ async function toAnalyzeError(response: Response): Promise<AnalyzeError> {
   );
 }
 
-function isApiError(value: unknown): value is ApiError {
+function extractApiError(
+  value: unknown,
+): { code: string; message: string } | null {
   if (typeof value !== "object" || value === null) {
-    return false;
+    return null;
   }
 
   const { error } = value as { error?: unknown };
   if (typeof error !== "object" || error === null) {
-    return false;
+    return null;
   }
 
   const { code, message } = error as { code?: unknown; message?: unknown };
-  return typeof code === "string" && typeof message === "string";
+  return typeof code === "string" && typeof message === "string"
+    ? { code, message }
+    : null;
 }
 
 type MockAnalysis = Pick<

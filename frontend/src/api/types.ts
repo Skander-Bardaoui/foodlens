@@ -17,12 +17,23 @@ export type Analysis = {
   ingredients: string[];
   steps: string[];
   image_url: string;
-  created_at: string;
+  created_at: string; // ISO 8601
+};
+
+export type AnalysisList = {
+  items: Analysis[];
+  total: number;
+};
+
+export type HistorySort = "newest" | "confidence";
+
+export type HistoryParams = {
+  limit?: number;
+  offset?: number;
+  sort?: HistorySort;
 };
 
 export type ApiError = {
-  error: {
-    code: string;
-    message: string;
-  };
+  code: string;
+  message: string;
 };
