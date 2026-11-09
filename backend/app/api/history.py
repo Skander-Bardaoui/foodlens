@@ -11,7 +11,6 @@ from app.db.repository import delete_analysis, get_analysis, list_analyses, to_o
 from app.db.session import get_db
 from app.schemas import AnalysisList, AnalysisOut, ErrorResponse
 
-# owned by Person 2
 router = APIRouter(prefix="/api", tags=["history"])
 
 NOT_FOUND_RESPONSE = {404: {"model": ErrorResponse, "description": "Analysis not found"}}
