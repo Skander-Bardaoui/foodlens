@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>FoodLens - AI Culinary Recognition</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "on-secondary-fixed-variant": "#005320",
+        "on-primary-fixed": "#341100",
+        "primary-fixed": "#ffdbca",
+        "on-primary-fixed-variant": "#783200",
+        "primary-container": "#f97316",
+        "tertiary-fixed-dim": "#ffb95f",
+        "surface-bright": "#f8f9ff",
+        "surface": "#f8f9ff",
+        "on-tertiary-fixed": "#2a1700",
+        "on-surface-variant": "#584237",
+        "inverse-on-surface": "#eaf1ff",
+        "on-background": "#121c2a",
+        "on-primary-container": "#582200",
+        "inverse-surface": "#27313f",
+        "on-primary": "#ffffff",
+        "primary": "#9d4300",
+        "tertiary-fixed": "#ffddb8",
+        "tertiary": "#855300",
+        "surface-variant": "#d9e3f6",
+        "on-secondary-fixed": "#002109",
+        "on-surface": "#121c2a",
+        "background": "#f8f9ff",
+        "on-tertiary-fixed-variant": "#653e00",
+        "secondary-container": "#7cf994",
+        "on-tertiary-container": "#492c00",
+        "on-secondary-container": "#007230",
+        "secondary-fixed": "#7ffc97",
+        "surface-tint": "#9d4300",
+        "surface-container-lowest": "#ffffff",
+        "on-secondary": "#ffffff",
+        "surface-container-highest": "#d9e3f6",
+        "primary-fixed-dim": "#ffb690",
+        "tertiary-container": "#d78900",
+        "outline-variant": "#e0c0b1",
+        "error-container": "#ffdad6",
+        "on-error": "#ffffff",
+        "surface-container-high": "#dee9fc",
+        "on-tertiary": "#ffffff",
+        "secondary-fixed-dim": "#62df7d",
+        "error": "#ba1a1a",
+        "on-error-container": "#93000a",
+        "surface-dim": "#d0dbed",
+        "inverse-primary": "#ffb690",
+        "outline": "#8c7164",
+        "secondary": "#006e2d",
+        "surface-container-low": "#eff4ff",
+        "surface-container": "#e6eeff"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+      },
+      "spacing": {
+        "margin": "2rem",
+        "space-xl": "2.5rem",
+        "space-lg": "1.5rem",
+        "space-md": "1rem",
+        "space-xs": "0.25rem",
+        "gutter-mobile": "1rem",
+        "space-sm": "0.5rem",
+        "margin-mobile": "1rem",
+        "gutter": "1.5rem"
+      },
+      "fontFamily": {
+        "body-lg": ["Inter"],
+        "body-sm": ["Inter"],
+        "display-hero": ["Plus Jakarta Sans"],
+        "headline-md": ["Plus Jakarta Sans"],
+        "label-sm": ["Inter"],
+        "headline-lg": ["Plus Jakarta Sans"],
+        "display-hero-mobile": ["Plus Jakarta Sans"],
+        "label-lg": ["Inter"],
+        "body-md": ["Inter"],
+        "headline-sm": ["Plus Jakarta Sans"],
+        "label-md": ["Inter"],
+        "headline-lg-mobile": ["Plus Jakarta Sans"]
+      },
+      "fontSize": {
+        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+        "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+        "display-hero": ["44px", {"lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700"}],
+        "display-hero-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800"}],
+        "label-lg": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+        "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+        "headline-sm": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+        "headline-lg-mobile": ["26px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+      }
+    }
+  }
+}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface min-h-screen flex flex-col antialiased"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-8 flex items-center justify-between"><div class="flex items-center gap-6"><div class="flex items-center gap-3"><img alt="FoodLens Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrAHLgO7YXs6InKx6EXuOrT3a4MbO_WTyyHlgZ6wep4XtApSCqyCalQkbaw1AgrYuwLLe9V66YRaH6ZV7DNBACfIwBr0UHuAlVwp7oTdbDbsE_SwVO-iJq4uK9DkjBOoEDiEp033M1oFtZJAbV_icjNagbvz82crplaJ5fg1VJL1xKVTWhR68OB755iNZM2HZyaHLmpsPmPJiXOSOi1x61nJRg5bIYV4RKaajjUrGtA0"/><span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">FoodLens</span><span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm tracking-wide uppercase">AI Beta</span></div><nav class="hidden md:flex items-center gap-8 h-16" data-active-classes="text-primary-container font-bold border-b-2 border-primary-container"><a class="h-full flex items-center font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors pb-0.5" data-path="home" href="#">Analyze</a><a aria-current="page" class="h-full flex items-center transition-colors pb-0.5 text-primary-container font-bold border-b-2 border-primary-container" data-path="history" href="#">History</a></nav></div><div class="flex items-center gap-4"><button class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all shadow-[0_1px_4px_rgba(0,0,0,0.03)]" type="button"><span class="material-symbols-outlined text-primary-container text-[18px]">cloud_upload</span><span>Quick Scan</span></button><div class="flex items-center gap-3 pl-2"><div class="relative flex items-center justify-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIAmyZgrsHNHKWSQYruO_X-YIrci9tMZIyOjhjMyHCcNVC4MAMrxZgrrTXfoKZStTRtlyT75QhOO_OxFjbvHdof9uk9j5qthjyd8NYOFwfRIuwsLT4LVfK9o1gxo-0iJgpoTs65AhGXwTn-0YcHyqXRy0ZOvsTJqllZisNEsvK5SRsRd14NfcSK23Vpk9Jr2bVowjRKAUXX5m9OEfDNrg8dpFb2k4Ijs4qwxg9rOE"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary ring-2 ring-surface-container-lowest"></span></div></div></div></div></header><main class="w-full pt-16 flex-1 bg-surface"><div class="max-w-7xl mx-auto px-8 py-8"><div class="flex flex-col w-full">
+<!-- Top Stats Banner & Page Header -->
+<div class="flex flex-col gap-6 mb-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">Culinary Memory</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Archived Scans & Predictions</span>
+</div>
+<div class="flex items-center gap-3">
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">Your analyses</h1>
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold shadow-sm">
+            18 saved recipes
+          </span>
+</div>
+</div>
+<!-- Quick Metrics Spark Bar -->
+<div class="flex items-center gap-6 bg-surface-container-lowest px-5 py-3 rounded-2xl shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-secondary-container/40 flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface leading-tight">94.2%</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Avg. Accuracy</div>
+</div>
+</div>
+<div class="w-px h-8 bg-surface-container"></div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface leading-tight">134</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Detected Foods</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Search & Filter Controls -->
+<div class="bg-surface-container-lowest p-4 rounded-2xl shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4">
+<!-- Search Input -->
+<div class="relative w-full lg:w-[26rem]">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/70 focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container transition-all" id="history-search-input" placeholder="Search by dish name or ingredient (e.g. Pasta, Basil, Ramen)..." type="text"/>
+</div>
+<!-- Filter Pill Chips -->
+<div class="flex items-center gap-2 overflow-x-auto w-full lg:w-auto pb-1 lg:pb-0" id="filter-chip-group">
+<button class="filter-pill active px-4 py-2 rounded-full font-label-md text-label-md font-semibold bg-primary-container text-on-primary transition-all shadow-sm whitespace-nowrap" data-filter="all" type="button">
+          All (18)
+        </button>
+<button class="filter-pill px-4 py-2 rounded-full font-label-md text-label-md font-semibold bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all whitespace-nowrap" data-filter="high" type="button">
+          High Confidence (15)
+        </button>
+<button class="filter-pill px-4 py-2 rounded-full font-label-md text-label-md font-semibold bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all whitespace-nowrap flex items-center gap-1.5" data-filter="favorites" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+          Favorites (7)
+        </button>
+<button class="filter-pill px-4 py-2 rounded-full font-label-md text-label-md font-semibold bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all whitespace-nowrap" data-filter="review" type="button">
+          Needs Review (3)
+        </button>
+</div>
+<!-- Sort Dropdown -->
+<div class="flex items-center gap-2 self-end lg:self-center">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" for="sort-select">Sort by</label>
+<div class="relative">
+<select class="appearance-none bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold rounded-xl pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-primary-container transition-colors cursor-pointer" id="sort-select">
+<option value="newest">Newest first</option>
+<option value="oldest">Oldest first</option>
+<option value="highest_conf">Highest confidence</option>
+<option value="lowest_conf">Lowest confidence</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main 3-Column Recipe Card Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12" id="recipe-card-grid">
+<!-- Card 1: Margherita Pizza -->
+<article class="recipe-card group relative flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-category="high favorites" data-title="Margherita Pizza">
+<div class="relative w-full h-52 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Close-up artisan Neapolitan Margherita pizza with charred blistered leopard crust, melted fresh buffalo mozzarella pearls, rich red San Marzano tomato sauce, fresh green basil leaves, and golden olive oil drizzle, softly lit on a rustic kitchen wood surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYU_mswnituhJCaEBwExrXRcq3jbawKEHT1z0CtNPXwIP5yt9R2sLTmOpthjchINHaDnPdHzzrg6gFtRcSn7j_X2TeSydzaFBVY4YM_PFkXDPfMi1YTRAdd-UAQtoLQG7zicczDiZTjVH-XaOg3sa77K-oXFDyQGs4TqRKaUE_qUW-Cb1qhxUm3kACSPgV1U4FB2Ay1C20c4EWQ0HYZ-Dsqos_lFrW5cToLmlkCBg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md font-label-sm text-label-sm font-bold text-on-secondary-container shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>92% match</span>
+</div>
+<div class="absolute top-3 right-3 flex items-center gap-2">
+<button aria-label="Toggle favorite" class="fav-toggle w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-primary shadow-sm hover:scale-110 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<button aria-label="Delete analysis" class="delete-btn opacity-0 group-hover:opacity-100 w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-error hover:bg-error-container hover:text-on-error-container shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-surface-bright">
+<span class="font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+            Oct 24, 2025
+          </span>
+<span class="font-label-sm text-label-sm px-2.5 py-0.5 rounded-full bg-on-surface/40 backdrop-blur-sm">
+            8 ingredients
+          </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 justify-between gap-4">
+<div>
+<div class="flex items-center justify-between gap-2 mb-1">
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">Margherita Pizza</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Crisp crust, San Marzano tomato sugo, fior di latte mozzarella, and fresh sweet basil leaves.</p>
+</div>
+<div class="flex items-center gap-2 pt-3 border-t-0 bg-surface-container-low p-2.5 rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Key picks:</span>
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">Mozzarella</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">Basil</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">+6 more</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2: Shakshuka with Feta -->
+<article class="recipe-card group relative flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-category="high favorites" data-title="Shakshuka with Feta">
+<div class="relative w-full h-52 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Rustic cast iron skillet filled with sizzling Shakshuka featuring sunny-side poached eggs nestled in rich spiced tomato bell pepper sauce, crumbled authentic Greek feta cheese, fresh chopped cilantro, and cumin seeds in warm natural morning light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYQek7AnXmU-cCkoRkusKs1C27W-mlYrv3Tpn7T7eAZGvk7y0GqRoBYIF7qUB24LjtRLpLUhm0jtRKpZoGs0t4jQKmYAh9I2_K6CpMauXSyeLK9ACadXjVLWMlRDBKlURIgeV1kS1zJBambxE_xWvFablXQ59ezqJ5i9zwHltOp3F0rTuQIZI-WAcdn6QjeuSVFHaeRpxstwyKA6GJxQgg7pueiXkJQJlTK2iL0Zc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md font-label-sm text-label-sm font-bold text-on-secondary-container shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>98% match</span>
+</div>
+<div class="absolute top-3 right-3 flex items-center gap-2">
+<button aria-label="Toggle favorite" class="fav-toggle w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-primary shadow-sm hover:scale-110 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<button aria-label="Delete analysis" class="delete-btn opacity-0 group-hover:opacity-100 w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-error hover:bg-error-container hover:text-on-error-container shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-surface-bright">
+<span class="font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+            Oct 23, 2025
+          </span>
+<span class="font-label-sm text-label-sm px-2.5 py-0.5 rounded-full bg-on-surface/40 backdrop-blur-sm">
+            10 ingredients
+          </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 justify-between gap-4">
+<div>
+<div class="flex items-center justify-between gap-2 mb-1">
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">Shakshuka with Feta</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Poached eggs in spiced tomato, cumin, charred bell peppers, and creamy crumbled feta cheese.</p>
+</div>
+<div class="flex items-center gap-2 pt-3 bg-surface-container-low p-2.5 rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Key picks:</span>
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">Free-range Eggs</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">Feta</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">+8 more</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3: Tonkotsu Ramen -->
+<article class="recipe-card group relative flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-category="high" data-title="Tonkotsu Ramen">
+<div class="relative w-full h-52 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Steaming ceramic bowl of authentic Japanese Tonkotsu ramen with opaque milky rich broth, rolled chashu pork belly slices, marinated soft-boiled ajitsuke tamago egg with jammy center, fresh scallions, nori seaweed sheet, and menma bamboo shoots." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxN4J4j-mic_gj0gllbtgXf3Hh42STV8piYHBz2hRSxHMZ5fdg9IoYV8ppjQQX9O92dYKjcTk5zYDIc-FKkejOFoA7ABbtzvgN6mEVFnD5knApmcDo5h3QDuYirtVwYTPV_-oMJzuQj4J-xnlayW3Y2axqJvM3Fs08dWHPvEACXcp1sX4sxsxJVk9cwQb855wNafqZCbTM8Igb-syS_qv3u_SWu87EIal9XnNXS4o"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md font-label-sm text-label-sm font-bold text-on-secondary-container shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>89% match</span>
+</div>
+<div class="absolute top-3 right-3 flex items-center gap-2">
+<button aria-label="Toggle favorite" class="fav-toggle w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-on-surface-variant hover:text-primary shadow-sm hover:scale-110 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<button aria-label="Delete analysis" class="delete-btn opacity-0 group-hover:opacity-100 w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-error hover:bg-error-container hover:text-on-error-container shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-surface-bright">
+<span class="font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+            Oct 21, 2025
+          </span>
+<span class="font-label-sm text-label-sm px-2.5 py-0.5 rounded-full bg-on-surface/40 backdrop-blur-sm">
+            12 ingredients
+          </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 justify-between gap-4">
+<div>
+<div class="flex items-center justify-between gap-2 mb-1">
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">Tonkotsu Ramen</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Slow-simmered pork bone broth with springy noodles, chashu pork, seasoned egg, and scallions.</p>
+</div>
+<div class="flex items-center gap-2 pt-3 bg-surface-container-low p-2.5 rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Key picks:</span>
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">Chashu Pork</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">Ramen Broth</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">+10 more</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 4: Avocado Tartine & Poached Egg -->
+<article class="recipe-card group relative flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-category="high favorites" data-title="Avocado Tartine & Poached Egg">
+<div class="relative w-full h-52 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Artisanal open-faced sourdough toast topped with rich mashed hass avocado, perfectly runny poached egg, chili flakes, micro greens, and toasted black sesame seeds against a bright minimalist marble brunch tabletop setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx6-2iQAjP40u_0GAutLBAebnsjoA09-VvPrTgpsBvFC1J8h1-T5bklMyMxWydt-oRArjBbiimBdU1UeTJHRRmyNPcM-WWh7f3l6jm_hhTW7a0up43wfpB-T7kScjHrAo4RIM4FNz4L2AoSL3rjTtuz_QmRvhv-RGrqvMLnxgj3TWdHDbi3gw-HhtOVIy30BQGfR5N0cLQilHA2ctPt9vpBR2xlyBgpk5YyaE92to"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md font-label-sm text-label-sm font-bold text-on-secondary-container shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>96% match</span>
+</div>
+<div class="absolute top-3 right-3 flex items-center gap-2">
+<button aria-label="Toggle favorite" class="fav-toggle w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-primary shadow-sm hover:scale-110 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<button aria-label="Delete analysis" class="delete-btn opacity-0 group-hover:opacity-100 w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-error hover:bg-error-container hover:text-on-error-container shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-surface-bright">
+<span class="font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+            Oct 19, 2025
+          </span>
+<span class="font-label-sm text-label-sm px-2.5 py-0.5 rounded-full bg-on-surface/40 backdrop-blur-sm">
+            6 ingredients
+          </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 justify-between gap-4">
+<div>
+<div class="flex items-center justify-between gap-2 mb-1">
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">Avocado Tartine & Poached Egg</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Crispy rustic sourdough, whipped ripe avocado, farm egg, Aleppo pepper, and radish sprouts.</p>
+</div>
+<div class="flex items-center gap-2 pt-3 bg-surface-container-low p-2.5 rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Key picks:</span>
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">Avocado</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">Sourdough</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">+4 more</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 5: Beef Bourguignon (Needs Review) -->
+<article class="recipe-card group relative flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-category="review" data-title="Beef Bourguignon">
+<div class="relative w-full h-52 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Rich dark French beef bourguignon stew with braised tender beef chunks, pearl onions, sliced cremini mushrooms, and glazed carrots in glossy Burgundy red wine demi-glace sauce garnished with fresh thyme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEQiavy1Urp937UasGkefWxSc7KWe34xEc-41wx9ueF7iTNOpxPFE4arRUj65l5KBx4RbDwOupAAEUU8fIxYXbKYzKzaSVMl5lWXT3asBmix44K1aIWy3l7v-6vjB0dmL2dfiWoSlnLB5YF53FTcdxOf2ACkJw9h2xWNzcRU9omxlM6Z1hlMjP_ZHRSn3k-6vaOwaEMPcECu_kYcJDw5N5GlfM4FhD8fz7qrvwTp0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md font-label-sm text-label-sm font-bold text-tertiary shadow-sm">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+<span>54% match (Needs Review)</span>
+</div>
+<div class="absolute top-3 right-3 flex items-center gap-2">
+<button aria-label="Toggle favorite" class="fav-toggle w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-on-surface-variant hover:text-primary shadow-sm hover:scale-110 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<button aria-label="Delete analysis" class="delete-btn opacity-0 group-hover:opacity-100 w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-error hover:bg-error-container hover:text-on-error-container shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-surface-bright">
+<span class="font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+            Oct 17, 2025
+          </span>
+<span class="font-label-sm text-label-sm px-2.5 py-0.5 rounded-full bg-on-surface/40 backdrop-blur-sm">
+            9 ingredients
+          </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 justify-between gap-4">
+<div>
+<div class="flex items-center justify-between gap-2 mb-1">
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">Beef Bourguignon</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Slow-cooked beef shoulder in red wine reduction, braised pearl onions, and savory mushrooms.</p>
+</div>
+<div class="flex items-center justify-between pt-3 bg-surface-container-low p-2.5 rounded-xl">
+<div class="flex items-center gap-1.5 text-tertiary">
+<span class="material-symbols-outlined text-[16px]">help_center</span>
+<span class="font-label-sm text-label-sm font-semibold">Multiple cut matches</span>
+</div>
+<button class="font-label-sm text-label-sm text-primary font-bold hover:underline" type="button">Verify ingredients →</button>
+</div>
+</div>
+</article>
+<!-- Card 6: Blueberry Acai Bowl -->
+<article class="recipe-card group relative flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1" data-category="high favorites" data-title="Blueberry Acai Bowl">
+<div class="relative w-full h-52 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Vibrant purple acai smoothie bowl served in a natural coconut shell topped in neat rows with fresh blueberries, sliced bananas, toasted granola clusters, chia seeds, and coconut flakes under soft daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOqshKftjn3QS7hFLXOXM6nOu5u70uKO6-Eds3R4CMuWnTuE3vAdsq1F23Lf1TIxLR382t6YIWejxwrI-wsHFZ6G0GrFhfHZHb5uMnllY3UW-VOGw2I2QThi6tXV9Zh_13yvD_uU1g8slRvFk5fS-JJeQ6T4pwlksK2XdCchMSsSXqsKxjonIaMVi8Z3udjCxrFeTiCsE_SyA9P2qWyB3_DCy0uqU0cSnfuTonWq4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md font-label-sm text-label-sm font-bold text-on-secondary-container shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>95% match</span>
+</div>
+<div class="absolute top-3 right-3 flex items-center gap-2">
+<button aria-label="Toggle favorite" class="fav-toggle w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-primary shadow-sm hover:scale-110 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<button aria-label="Delete analysis" class="delete-btn opacity-0 group-hover:opacity-100 w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-error hover:bg-error-container hover:text-on-error-container shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-surface-bright">
+<span class="font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+            Oct 14, 2025
+          </span>
+<span class="font-label-sm text-label-sm px-2.5 py-0.5 rounded-full bg-on-surface/40 backdrop-blur-sm">
+            7 ingredients
+          </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 justify-between gap-4">
+<div>
+<div class="flex items-center justify-between gap-2 mb-1">
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface line-clamp-1 group-hover:text-primary transition-colors">Blueberry Acai Bowl</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Frozen acai puree blended with bananas, layered with organic oats granola, fresh berries, and honey.</p>
+</div>
+<div class="flex items-center gap-2 pt-3 bg-surface-container-low p-2.5 rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Key picks:</span>
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">Pure Acai</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">Blueberries</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-lowest text-on-surface font-label-sm text-label-sm">+5 more</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- Load More & Pagination Bar -->
+<div class="flex flex-col items-center justify-center gap-3 mb-16">
+<button class="group inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg font-semibold shadow-sm hover:shadow-md transition-all active:scale-[0.98]" id="load-more-btn" type="button">
+<span class="material-symbols-outlined text-[20px] text-primary-container group-hover:rotate-180 transition-transform duration-500">sync</span>
+<span>Load more analyses (12 remaining)</span>
+</button>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Showing 6 of 18 total dish scans</p>
+</div>
+<!-- Bottom Empty State Preview Accordion / Banner Callout -->
+<div class="w-full bg-surface-container-lowest rounded-2xl p-6 shadow-sm mb-6 transition-all duration-300">
+<div class="flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Empty state preview mode</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Curious how this view looks for new accounts before uploading food scans?</p>
+</div>
+</div>
+<button class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold transition-colors" id="toggle-empty-state-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+<span id="toggle-state-label">Preview Empty Canvas</span>
+</button>
+</div>
+<!-- Empty State Content Box (Collapsible) -->
+<div class="hidden mt-6 pt-6 bg-surface-container-low/60 rounded-xl p-8 flex-col items-center text-center" id="empty-state-drawer">
+<div class="relative w-28 h-28 mb-5 flex items-center justify-center">
+<!-- SVG Culinary Plate Illustration -->
+<svg class="w-full h-full text-outline-variant fill-none stroke-current" stroke-width="2.5" viewbox="0 0 120 120">
+<circle class="text-surface-variant fill-surface-container-lowest" cx="60" cy="60" r="52"></circle>
+<circle class="text-outline-variant" cx="60" cy="60" r="36" stroke-dasharray="4 4"></circle>
+<circle class="text-primary-fixed fill-surface-container-lowest" cx="60" cy="60" r="18"></circle>
+<path class="text-primary" d="M44 48 L44 32 M40 32 L48 32" stroke-linecap="round" stroke-linejoin="round"></path>
+<path class="text-primary" d="M76 48 L76 32 M72 32 C72 36 80 36 80 32" stroke-linecap="round" stroke-linejoin="round"></path>
+<circle class="text-primary fill-primary" cx="60" cy="60" r="3"></circle>
+</svg>
+<span class="material-symbols-outlined absolute -bottom-1 -right-1 text-primary-container bg-surface-container-lowest p-1 rounded-full text-[24px] shadow-sm">
+          center_focus_weak
+        </span>
+</div>
+<h4 class="font-headline-md text-headline-md font-bold text-on-surface mb-2">No analyses yet</h4>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mb-6">
+        When you photograph or upload dishes, FoodLens uses deep neural networks to extract ingredients, cooking styles, and macronutrients automatically.
+      </p>
+<div class="flex items-center gap-3">
+<button class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary-container hover:bg-on-primary-container text-on-primary font-label-lg text-label-lg font-bold shadow-md hover:scale-[1.02] transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">add_a_photo</span>
+<span>Analyze your first dish</span>
+</button>
+<button class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg font-semibold transition-colors shadow-sm" id="sample-demo-btn" type="button">
+<span>Load sample batch</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Client-side Interactive Behavior -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Filter Chip Behavior
+      const chips = document.querySelectorAll('.filter-pill');
+      const cards = document.querySelectorAll('.recipe-card');
+
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          chips.forEach(c => {
+            c.classList.remove('active', 'bg-primary-container', 'text-on-primary', 'shadow-sm');
+            c.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+          });
+          chip.classList.add('active', 'bg-primary-container', 'text-on-primary', 'shadow-sm');
+          chip.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+
+          const filterVal = chip.getAttribute('data-filter');
+          cards.forEach(card => {
+            const cat = card.getAttribute('data-category') || '';
+            if (filterVal === 'all') {
+              card.style.display = 'flex';
+            } else if (filterVal === 'high' && cat.includes('high')) {
+              card.style.display = 'flex';
+            } else if (filterVal === 'favorites' && cat.includes('favorites')) {
+              card.style.display = 'flex';
+            } else if (filterVal === 'review' && cat.includes('review')) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // 2. Search Input Filtering
+      const searchInput = document.getElementById('history-search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const q = e.target.value.toLowerCase().trim();
+          cards.forEach(card => {
+            const title = (card.getAttribute('data-title') || '').toLowerCase();
+            const text = card.innerText.toLowerCase();
+            if (!q || title.includes(q) || text.includes(q)) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      }
+
+      // 3. Favorite Button Toggles
+      document.querySelectorAll('.fav-toggle').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const icon = btn.querySelector('.material-symbols-outlined');
+          const isFilled = icon.style.fontVariationSettings?.includes("'FILL' 1");
+          if (isFilled) {
+            icon.style.fontVariationSettings = "'FILL' 0";
+            btn.classList.remove('text-primary');
+            btn.classList.add('text-on-surface-variant');
+          } else {
+            icon.style.fontVariationSettings = "'FILL' 1";
+            btn.classList.add('text-primary');
+            btn.classList.remove('text-on-surface-variant');
+          }
+        });
+      });
+
+      // 4. Delete Simulation
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const card = btn.closest('.recipe-card');
+          if (card) {
+            card.style.transition = 'all 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+              card.remove();
+            }, 300);
+          }
+        });
+      });
+
+      // 5. Empty State Drawer Toggle
+      const toggleEmptyBtn = document.getElementById('toggle-empty-state-btn');
+      const emptyDrawer = document.getElementById('empty-state-drawer');
+      const toggleLabel = document.getElementById('toggle-state-label');
+
+      if (toggleEmptyBtn && emptyDrawer) {
+        toggleEmptyBtn.addEventListener('click', () => {
+          const isHidden = emptyDrawer.classList.contains('hidden');
+          if (isHidden) {
+            emptyDrawer.classList.remove('hidden');
+            emptyDrawer.classList.add('flex');
+            toggleLabel.textContent = 'Hide Empty Canvas';
+          } else {
+            emptyDrawer.classList.add('hidden');
+            emptyDrawer.classList.remove('flex');
+            toggleLabel.textContent = 'Preview Empty Canvas';
+          }
+        });
+      }
+
+      // 6. Sample batch action in empty state
+      const sampleBtn = document.getElementById('sample-demo-btn');
+      if (sampleBtn) {
+        sampleBtn.addEventListener('click', () => {
+          if (emptyDrawer) {
+            emptyDrawer.classList.add('hidden');
+            emptyDrawer.classList.remove('flex');
+            if (toggleLabel) toggleLabel.textContent = 'Preview Empty Canvas';
+          }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+    });
+  </script>
+</div></div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)] py-8 mt-auto"><div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-4 font-body-sm text-body-sm text-on-surface-variant"><div class="flex items-center gap-2"><span class="font-label-md text-label-md font-semibold text-on-surface">FoodLens AI</span><span>•</span><span>© 2025 FoodLens AI • Built with FastAPI + React</span></div><div class="flex items-center gap-6 font-label-md text-label-md"><a class="hover:text-primary-container transition-colors" data-path="privacy" href="#">Privacy</a><a class="hover:text-primary-container transition-colors" data-path="api-docs" href="#">API Docs</a><a class="hover:text-primary-container transition-colors" data-path="feedback" href="#">Feedback</a></div></div></footer></body></html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_blank" name="shell-type"/><title>FoodLens AI</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "on-secondary-fixed-variant": "#005320",
+        "on-primary-fixed": "#341100",
+        "primary-fixed": "#ffdbca",
+        "on-primary-fixed-variant": "#783200",
+        "primary-container": "#f97316",
+        "tertiary-fixed-dim": "#ffb95f",
+        "surface-bright": "#f8f9ff",
+        "surface": "#f8f9ff",
+        "on-tertiary-fixed": "#2a1700",
+        "on-surface-variant": "#584237",
+        "inverse-on-surface": "#eaf1ff",
+        "on-background": "#121c2a",
+        "on-primary-container": "#582200",
+        "inverse-surface": "#27313f",
+        "on-primary": "#ffffff",
+        "primary": "#9d4300",
+        "tertiary-fixed": "#ffddb8",
+        "tertiary": "#855300",
+        "surface-variant": "#d9e3f6",
+        "on-secondary-fixed": "#002109",
+        "on-surface": "#121c2a",
+        "background": "#f8f9ff",
+        "on-tertiary-fixed-variant": "#653e00",
+        "secondary-container": "#7cf994",
+        "on-tertiary-container": "#492c00",
+        "on-secondary-container": "#007230",
+        "secondary-fixed": "#7ffc97",
+        "surface-tint": "#9d4300",
+        "surface-container-lowest": "#ffffff",
+        "on-secondary": "#ffffff",
+        "surface-container-highest": "#d9e3f6",
+        "primary-fixed-dim": "#ffb690",
+        "tertiary-container": "#d78900",
+        "outline-variant": "#e0c0b1",
+        "error-container": "#ffdad6",
+        "on-error": "#ffffff",
+        "surface-container-high": "#dee9fc",
+        "on-tertiary": "#ffffff",
+        "secondary-fixed-dim": "#62df7d",
+        "error": "#ba1a1a",
+        "on-error-container": "#93000a",
+        "surface-dim": "#d0dbed",
+        "inverse-primary": "#ffb690",
+        "outline": "#8c7164",
+        "secondary": "#006e2d",
+        "surface-container-low": "#eff4ff",
+        "surface-container": "#e6eeff"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+      },
+      "spacing": {
+        "margin": "2rem",
+        "space-xl": "2.5rem",
+        "space-lg": "1.5rem",
+        "space-md": "1rem",
+        "space-xs": "0.25rem",
+        "gutter-mobile": "1rem",
+        "space-sm": "0.5rem",
+        "margin-mobile": "1rem",
+        "gutter": "1.5rem"
+      },
+      "fontFamily": {
+        "body-lg": ["Inter"],
+        "body-sm": ["Inter"],
+        "display-hero": ["Plus Jakarta Sans"],
+        "headline-md": ["Plus Jakarta Sans"],
+        "label-sm": ["Inter"],
+        "headline-lg": ["Plus Jakarta Sans"],
+        "display-hero-mobile": ["Plus Jakarta Sans"],
+        "label-lg": ["Inter"],
+        "body-md": ["Inter"],
+        "headline-sm": ["Plus Jakarta Sans"],
+        "label-md": ["Inter"],
+        "headline-lg-mobile": ["Plus Jakarta Sans"]
+      },
+      "fontSize": {
+        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+        "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+        "display-hero": ["44px", {"lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700"}],
+        "display-hero-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800"}],
+        "label-lg": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+        "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+        "headline-sm": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+        "headline-lg-mobile": ["26px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+      }
+    }
+  }
+}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface min-h-screen flex items-center justify-center p-6 antialiased"><main class="w-full max-w-lg mx-auto"><div class="flex flex-col w-full items-center justify-center py-6">
+<!-- Ambient backdrop glows -->
+<div class="relative w-full flex flex-col items-center">
+<div class="absolute -top-12 -left-10 w-72 h-72 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/3 -right-12 w-64 h-64 bg-error-container/40 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Centered Card Container -->
+<div class="relative w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-xl p-8 sm:p-10 flex flex-col items-center text-center overflow-hidden">
+<!-- Top Culinary Illustration & Alert Icon -->
+<div class="relative mb-6">
+<div class="w-24 h-24 rounded-full bg-error-container/50 flex items-center justify-center relative">
+<!-- Warm subtle inner circle -->
+<div class="w-16 h-16 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center">
+<!-- Whimsical Spilled Salt / Wandering Chef Hat Graphic -->
+<svg class="w-9 h-9 text-primary-container" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 26C11.7909 26 10 24.2091 10 22C10 20.08 11.34 18.47 13.13 18.08C13.04 17.57 13 17.04 13 16.5C13 12.36 16.36 9 20.5 9C22.68 9 24.63 9.94 26 11.43C27.37 9.94 29.32 9 31.5 9C35.64 9 39 12.36 39 16.5C39 17.04 38.96 17.57 38.87 18.08C40.66 18.47 42 20.08 42 22C42 24.2091 40.2091 26 38 26H14Z" fill="currentColor" fill-opacity="0.15"></path>
+<path d="M14 26C11.7909 26 10 24.2091 10 22C10 20.08 11.34 18.47 13.13 18.08C13.04 17.57 13 17.04 13 16.5C13 12.36 16.36 9 20.5 9C22.68 9 24.63 9.94 26 11.43C27.37 9.94 29.32 9 31.5 9C35.64 9 39 12.36 39 16.5C39 17.04 38.96 17.57 38.87 18.08C40.66 18.47 42 20.08 42 22C42 24.2091 40.2091 26 38 26" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path>
+<path d="M15 26V32C15 33.1046 15.8954 34 17 34H35C36.1046 34 37 33.1046 37 32V26" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path>
+<path d="M19 30H33" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+<!-- Spilled Spice Particles -->
+<circle cx="39" cy="35" fill="#EF4444" r="1.5"></circle>
+<circle cx="43" cy="38" fill="#F97316" r="1.2"></circle>
+<circle cx="41" cy="42" fill="#EF4444" r="1.8"></circle>
+</svg>
+</div>
+<!-- Alert Floating Badge -->
+<div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-error text-on-error flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[16px] leading-none">priority_high</span>
+</div>
+</div>
+</div>
+<!-- Error Status Pill -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
+<span>Error 500 • Processing Timeout</span>
+</div>
+<!-- Main Headline -->
+<h1 class="font-headline-lg text-headline-lg text-on-surface mt-4 tracking-tight">
+        Something went wrong
+      </h1>
+<!-- Description Body -->
+<p class="font-body-md text-body-md text-on-surface-variant mt-3 max-w-md mx-auto leading-relaxed">
+        The server could not process your photo. This can happen if the image is corrupt, unsupported, or our vision model experienced high load.
+      </p>
+<!-- Technical Details Accordion -->
+<div class="w-full mt-6 text-left">
+<div class="bg-surface-container-low rounded-xl overflow-hidden">
+<button class="w-full px-4 py-3 flex items-center justify-between font-label-md text-label-md text-on-surface hover:text-primary transition-colors cursor-pointer select-none" onclick="document.getElementById('tech-details').classList.toggle('hidden'); document.getElementById('toggle-icon').classList.toggle('rotate-180');" type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+<span>Diagnostic Logs & Error Code</span>
+</span>
+<span class="material-symbols-outlined text-[18px] transition-transform duration-200" id="toggle-icon">
+              expand_more
+            </span>
+</button>
+<div class="hidden px-4 pb-4 font-body-sm text-body-sm space-y-2" id="tech-details">
+<div class="p-3 bg-surface-container-lowest rounded-lg font-mono text-[12px] leading-snug text-on-surface-variant overflow-x-auto">
+<p class="text-error font-semibold">[ERR_VISION_TIMEOUT]</p>
+<p class="mt-1">Endpoint: POST /api/v1/analyze</p>
+<p>Cluster: us-east-inference-04</p>
+<p>Latency: 30002ms (threshold: 25000ms)</p>
+<p class="text-on-surface-variant/60 mt-1">Trace-ID: fl_84920fe81c2049d9</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Primary & Secondary Action CTAs -->
+<div class="flex flex-col sm:flex-row items-center justify-center gap-3 w-full mt-8">
+<!-- Try Again (Primary Button) -->
+<button class="w-full sm:w-auto px-7 py-3 rounded-full bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:bg-on-primary-container transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 active:scale-[0.98]" onclick="this.disabled=true; this.innerHTML='<span class=\'material-symbols-outlined animate-spin text-[18px]\'>progress_activity</span> Analyzing...'; setTimeout(() => location.reload(), 1200);" type="button">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+<span>Try again</span>
+</button>
+<!-- Back to Home (Secondary Button) -->
+<button class="w-full sm:w-auto px-7 py-3 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-variant font-label-lg text-label-lg transition-colors flex items-center justify-center" onclick="window.history.length > 1 ? window.history.back() : window.location.href='/';" type="button">
+          Back to home
+        </button>
+</div>
+<!-- Support Helper Note -->
+<div class="mt-8 pt-6 w-full flex flex-col items-center gap-2 text-center">
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-sm">
+          Need help? Check our supported formats (JPG, PNG under 5MB) or reach out to 
+          <a class="text-primary font-semibold hover:underline inline-flex items-center gap-0.5 ml-0.5" href="mailto:support@foodlens.ai">
+            support@foodlens.ai
+          </a>
+</p>
+<!-- Quick tips row -->
+<div class="flex items-center justify-center gap-4 text-on-surface-variant/70 font-label-sm text-label-sm mt-1">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">photo_camera</span>
+            Good lighting
+          </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">aspect_ratio</span>
+            Max 5MB
+          </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">restaurant</span>
+            Focus on dish
+          </span>
+</div>
+</div>
+</div>
+</div>
+</div></main></body></html>

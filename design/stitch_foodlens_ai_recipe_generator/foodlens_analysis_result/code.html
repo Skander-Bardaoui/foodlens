@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>FoodLens - AI Culinary Recognition</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "on-secondary-fixed-variant": "#005320",
+        "on-primary-fixed": "#341100",
+        "primary-fixed": "#ffdbca",
+        "on-primary-fixed-variant": "#783200",
+        "primary-container": "#f97316",
+        "tertiary-fixed-dim": "#ffb95f",
+        "surface-bright": "#f8f9ff",
+        "surface": "#f8f9ff",
+        "on-tertiary-fixed": "#2a1700",
+        "on-surface-variant": "#584237",
+        "inverse-on-surface": "#eaf1ff",
+        "on-background": "#121c2a",
+        "on-primary-container": "#582200",
+        "inverse-surface": "#27313f",
+        "on-primary": "#ffffff",
+        "primary": "#9d4300",
+        "tertiary-fixed": "#ffddb8",
+        "tertiary": "#855300",
+        "surface-variant": "#d9e3f6",
+        "on-secondary-fixed": "#002109",
+        "on-surface": "#121c2a",
+        "background": "#f8f9ff",
+        "on-tertiary-fixed-variant": "#653e00",
+        "secondary-container": "#7cf994",
+        "on-tertiary-container": "#492c00",
+        "on-secondary-container": "#007230",
+        "secondary-fixed": "#7ffc97",
+        "surface-tint": "#9d4300",
+        "surface-container-lowest": "#ffffff",
+        "on-secondary": "#ffffff",
+        "surface-container-highest": "#d9e3f6",
+        "primary-fixed-dim": "#ffb690",
+        "tertiary-container": "#d78900",
+        "outline-variant": "#e0c0b1",
+        "error-container": "#ffdad6",
+        "on-error": "#ffffff",
+        "surface-container-high": "#dee9fc",
+        "on-tertiary": "#ffffff",
+        "secondary-fixed-dim": "#62df7d",
+        "error": "#ba1a1a",
+        "on-error-container": "#93000a",
+        "surface-dim": "#d0dbed",
+        "inverse-primary": "#ffb690",
+        "outline": "#8c7164",
+        "secondary": "#006e2d",
+        "surface-container-low": "#eff4ff",
+        "surface-container": "#e6eeff"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+      },
+      "spacing": {
+        "margin": "2rem",
+        "space-xl": "2.5rem",
+        "space-lg": "1.5rem",
+        "space-md": "1rem",
+        "space-xs": "0.25rem",
+        "gutter-mobile": "1rem",
+        "space-sm": "0.5rem",
+        "margin-mobile": "1rem",
+        "gutter": "1.5rem"
+      },
+      "fontFamily": {
+        "body-lg": ["Inter"],
+        "body-sm": ["Inter"],
+        "display-hero": ["Plus Jakarta Sans"],
+        "headline-md": ["Plus Jakarta Sans"],
+        "label-sm": ["Inter"],
+        "headline-lg": ["Plus Jakarta Sans"],
+        "display-hero-mobile": ["Plus Jakarta Sans"],
+        "label-lg": ["Inter"],
+        "body-md": ["Inter"],
+        "headline-sm": ["Plus Jakarta Sans"],
+        "label-md": ["Inter"],
+        "headline-lg-mobile": ["Plus Jakarta Sans"]
+      },
+      "fontSize": {
+        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+        "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+        "display-hero": ["44px", {"lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700"}],
+        "display-hero-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800"}],
+        "label-lg": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+        "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+        "headline-sm": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+        "headline-lg-mobile": ["26px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+      }
+    }
+  }
+}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface min-h-screen flex flex-col antialiased"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-8 flex items-center justify-between"><div class="flex items-center gap-6"><div class="flex items-center gap-3"><img alt="FoodLens Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrAHLgO7YXs6InKx6EXuOrT3a4MbO_WTyyHlgZ6wep4XtApSCqyCalQkbaw1AgrYuwLLe9V66YRaH6ZV7DNBACfIwBr0UHuAlVwp7oTdbDbsE_SwVO-iJq4uK9DkjBOoEDiEp033M1oFtZJAbV_icjNagbvz82crplaJ5fg1VJL1xKVTWhR68OB755iNZM2HZyaHLmpsPmPJiXOSOi1x61nJRg5bIYV4RKaajjUrGtA0"/><span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">FoodLens</span><span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm tracking-wide uppercase">AI Beta</span></div><nav class="hidden md:flex items-center gap-8 h-16" data-active-classes="text-primary-container font-bold border-b-2 border-primary-container"><a class="h-full flex items-center font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors pb-0.5" data-path="home" href="#">Analyze</a><a class="h-full flex items-center font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors pb-0.5" data-path="history" href="#">History</a></nav></div><div class="flex items-center gap-4"><button class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all shadow-[0_1px_4px_rgba(0,0,0,0.03)]" type="button"><span class="material-symbols-outlined text-primary-container text-[18px]">cloud_upload</span><span>Quick Scan</span></button><div class="flex items-center gap-3 pl-2"><div class="relative flex items-center justify-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIAmyZgrsHNHKWSQYruO_X-YIrci9tMZIyOjhjMyHCcNVC4MAMrxZgrrTXfoKZStTRtlyT75QhOO_OxFjbvHdof9uk9j5qthjyd8NYOFwfRIuwsLT4LVfK9o1gxo-0iJgpoTs65AhGXwTn-0YcHyqXRy0ZOvsTJqllZisNEsvK5SRsRd14NfcSK23Vpk9Jr2bVowjRKAUXX5m9OEfDNrg8dpFb2k4Ijs4qwxg9rOE"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary ring-2 ring-surface-container-lowest"></span></div></div></div></div></header><main class="w-full pt-16 flex-1 bg-surface"><div class="max-w-7xl mx-auto px-8 py-8"><div class="flex flex-col w-full">
+<!-- Top Action & Status Bar -->
+<div class="w-full flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 mb-2">
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 font-label-md text-label-md text-on-surface-variant">
+<a class="hover:text-primary-container transition-colors" data-path="history" href="#">Analyses</a>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant/60">chevron_right</span>
+<span class="text-on-surface font-semibold">Margherita Pizza</span>
+</div>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/20 text-on-secondary-container font-label-sm text-label-sm font-semibold tracking-wide">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+        Verified Recipe
+      </span>
+</div>
+<!-- Actions Group -->
+<div class="flex items-center gap-3">
+<button class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg font-medium transition-all shadow-sm hover:scale-[1.02] active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+<span>Analyze another photo</span>
+</button>
+<button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-lg text-label-lg font-medium transition-all shadow-sm" id="favorite-btn" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary-container" id="favorite-icon">favorite_border</span>
+<span id="favorite-label">Save to Favorites</span>
+</button>
+<button class="p-2.5 rounded-full text-on-surface-variant hover:text-error hover:bg-error-container/40 transition-colors" title="Delete scan" type="button">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Two-Column Main Result Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column (approx 40% -> 5 cols in 12-col grid) -->
+<div class="lg:col-span-5 flex flex-col gap-6">
+<!-- Dish Visual Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm overflow-hidden flex flex-col">
+<div class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-inner group">
+<img class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Close up artisanal Neapolitan Margherita pizza freshly baked in a roaring wood-fired oven with blistered spotted cornicione crust, vivid ruby-red San Marzano tomato sauce, glistening pools of melted buffalo mozzarella, vibrant torn fresh sweet basil leaves, drizzle of golden extra virgin olive oil, warm atmospheric dining light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuC6-p-AwwL0JFJXWram0kgqExWbhCZoQ_FCBDhfUBZOEZ1YsLycyMCUxVhcRqy80u2GwOIwlIdbaYMDfHTB1gejBV56vcuMbIBH6ONuclJyUNclBFvo6kmTQpLU_Y1h7oRBLy7-7nBEoAALWGKpToYhDh8mnMvGfXaPNsHqruAVOHt_6gnzLLpwoiSeXGjEiZ1HnTVsK3uGSfjbk2wpunIRRwdaUJUQ8luCC2CuY"/>
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold tracking-wide uppercase">AI Viewfinder</span>
+</div>
+<div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-inverse-surface/80 text-inverse-on-surface font-label-sm text-label-sm backdrop-blur-md">
+            ISO 400 • f/2.4
+          </div>
+</div>
+<!-- Meta Details Below Photo -->
+<div class="pt-5 px-1 flex flex-col gap-3">
+<div class="flex items-center justify-between flex-wrap gap-2">
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">
+              Margherita Pizza
+            </h1>
+<!-- High Confidence Badge -->
+<div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-secondary-container/30 text-on-secondary-container font-label-md text-label-md font-bold shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary font-bold">check_circle</span>
+<span>92% match</span>
+</div>
+</div>
+<!-- Dish Quick Tags -->
+<div class="flex flex-wrap items-center gap-2 pt-1">
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md">Italian</span>
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md">Vegetarian</span>
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md">Baking / Oven</span>
+<span class="px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">timer</span>
+              Prep: 25m • Cook: 10m
+            </span>
+</div>
+</div>
+</div>
+<!-- Predictions Distribution Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]">insights</span>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Visual Model Predictions</h2>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">ResNet-Culinary</span>
+</div>
+<!-- Predictions List -->
+<div class="flex flex-col gap-4 pt-1">
+<!-- Bar 1 -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center font-label-md text-label-md">
+<span class="font-semibold text-on-surface flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                Margherita Pizza
+              </span>
+<span class="font-bold text-secondary">92%</span>
+</div>
+<div class="w-full h-2.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full rounded-full bg-secondary transition-all duration-700" style="width: 92%;"></div>
+</div>
+</div>
+<!-- Bar 2 -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center font-label-md text-label-md">
+<span class="font-medium text-on-surface-variant flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed-dim"></span>
+                Neapolitan Marinara
+              </span>
+<span class="text-on-surface-variant">5%</span>
+</div>
+<div class="w-full h-2.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full rounded-full bg-primary-fixed-dim transition-all duration-700" style="width: 5%;"></div>
+</div>
+</div>
+<!-- Bar 3 -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center font-label-md text-label-md">
+<span class="font-medium text-on-surface-variant flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-variant"></span>
+                Quattro Formaggi
+              </span>
+<span class="text-on-surface-variant">3%</span>
+</div>
+<div class="w-full h-2.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full rounded-full bg-surface-variant transition-all duration-700" style="width: 3%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Nutritional Profile Overview -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">Estimated Serving</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Per 1/2 Pizza (240g)</span>
+</div>
+<div class="grid grid-cols-3 gap-3 pt-2">
+<div class="flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container-low text-center">
+<span class="font-headline-sm text-headline-sm font-bold text-primary-container">640</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase mt-0.5">Calories</span>
+</div>
+<div class="flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container-low text-center">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">26g</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase mt-0.5">Protein</span>
+</div>
+<div class="flex flex-col items-center justify-center p-3 rounded-xl bg-surface-container-low text-center">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">78g</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase mt-0.5">Carbs</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (approx 60% -> 7 cols in 12-col grid) -->
+<div class="lg:col-span-7 flex flex-col gap-6">
+<!-- Ingredients Card with Interactive Checklist -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[22px]">kitchen</span>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">Ingredients</h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+              8 detected ingredients • Tap checkbox to track your pantry
+            </p>
+</div>
+<div class="flex items-center gap-1 self-start sm:self-auto px-3 py-1 rounded-full bg-surface-container-low">
+<span class="font-label-sm text-label-sm font-bold text-primary-container" id="pantry-counter">2 / 7</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">in pantry</span>
+</div>
+</div>
+<!-- Checklist -->
+<div class="flex flex-col divide-y divide-surface-container pt-2" id="ingredients-list">
+<!-- Item 1 (Checked) -->
+<label class="group flex items-center justify-between py-3 cursor-pointer select-none">
+<div class="flex items-center gap-3">
+<input checked="" class="sr-only peer ingredient-checkbox" type="checkbox"/>
+<div class="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-on-secondary transition-all peer-checked:scale-100 peer-focus:ring-2 peer-focus:ring-primary-container/20">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant line-through transition-colors peer-checked:text-on-surface-variant peer-checked:line-through peer-[:not(:checked)]:text-on-surface peer-[:not(:checked)]:no-underline">
+                250g '00' Tipo Flour or Bread Flour
+              </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant px-2 py-0.5 rounded bg-surface-container-low">Dough</span>
+</label>
+<!-- Item 2 (Checked) -->
+<label class="group flex items-center justify-between py-3 cursor-pointer select-none">
+<div class="flex items-center gap-3">
+<input checked="" class="sr-only peer ingredient-checkbox" type="checkbox"/>
+<div class="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-on-secondary transition-all peer-checked:scale-100 peer-focus:ring-2 peer-focus:ring-primary-container/20">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant line-through transition-colors peer-checked:text-on-surface-variant peer-checked:line-through peer-[:not(:checked)]:text-on-surface peer-[:not(:checked)]:no-underline">
+                160ml Luke-warm filtered water
+              </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant px-2 py-0.5 rounded bg-surface-container-low">Dough</span>
+</label>
+<!-- Item 3 -->
+<label class="group flex items-center justify-between py-3 cursor-pointer select-none">
+<div class="flex items-center gap-3">
+<input class="sr-only peer ingredient-checkbox" type="checkbox"/>
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-on-secondary transition-all peer-checked:bg-secondary peer-focus:ring-2 peer-focus:ring-primary-container/20">
+<span class="material-symbols-outlined text-[16px] font-bold opacity-0 peer-checked:opacity-100">check</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface transition-colors peer-checked:text-on-surface-variant peer-checked:line-through">
+                125g Fresh Buffalo Mozzarella (drained and torn)
+              </span>
+</div>
+<span class="font-label-sm text-label-sm text-primary-container px-2 py-0.5 rounded bg-primary-fixed/50 font-semibold">Key Tag</span>
+</label>
+<!-- Item 4 -->
+<label class="group flex items-center justify-between py-3 cursor-pointer select-none">
+<div class="flex items-center gap-3">
+<input class="sr-only peer ingredient-checkbox" type="checkbox"/>
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-on-secondary transition-all peer-checked:bg-secondary peer-focus:ring-2 peer-focus:ring-primary-container/20">
+<span class="material-symbols-outlined text-[16px] font-bold opacity-0 peer-checked:opacity-100">check</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface transition-colors peer-checked:text-on-surface-variant peer-checked:line-through">
+                80g San Marzano Crushed Tomatoes
+              </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant px-2 py-0.5 rounded bg-surface-container-low">Sauce</span>
+</label>
+<!-- Item 5 -->
+<label class="group flex items-center justify-between py-3 cursor-pointer select-none">
+<div class="flex items-center gap-3">
+<input class="sr-only peer ingredient-checkbox" type="checkbox"/>
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-on-secondary transition-all peer-checked:bg-secondary peer-focus:ring-2 peer-focus:ring-primary-container/20">
+<span class="material-symbols-outlined text-[16px] font-bold opacity-0 peer-checked:opacity-100">check</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface transition-colors peer-checked:text-on-surface-variant peer-checked:line-through">
+                4-5 Fresh Sweet Basil Leaves
+              </span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary-container text-on-secondary-container px-2 py-0.5 rounded bg-secondary-container/30 font-semibold">Fresh</span>
+</label>
+<!-- Item 6 -->
+<label class="group flex items-center justify-between py-3 cursor-pointer select-none">
+<div class="flex items-center gap-3">
+<input class="sr-only peer ingredient-checkbox" type="checkbox"/>
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-on-secondary transition-all peer-checked:bg-secondary peer-focus:ring-2 peer-focus:ring-primary-container/20">
+<span class="material-symbols-outlined text-[16px] font-bold opacity-0 peer-checked:opacity-100">check</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface transition-colors peer-checked:text-on-surface-variant peer-checked:line-through">
+                5g Sea Salt & 2g Active Dry Yeast
+              </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant px-2 py-0.5 rounded bg-surface-container-low">Seasoning</span>
+</label>
+<!-- Item 7 -->
+<label class="group flex items-center justify-between py-3 cursor-pointer select-none">
+<div class="flex items-center gap-3">
+<input class="sr-only peer ingredient-checkbox" type="checkbox"/>
+<div class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-on-secondary transition-all peer-checked:bg-secondary peer-focus:ring-2 peer-focus:ring-primary-container/20">
+<span class="material-symbols-outlined text-[16px] font-bold opacity-0 peer-checked:opacity-100">check</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface transition-colors peer-checked:text-on-surface-variant peer-checked:line-through">
+                1 tbsp Extra Virgin Olive Oil
+              </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant px-2 py-0.5 rounded bg-surface-container-low">Oil</span>
+</label>
+</div>
+</div>
+<!-- Recipe Steps Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[22px]">format_list_numbered</span>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">Recipe Steps</h2>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high font-label-md text-label-md text-on-surface font-medium flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">volume_up</span>
+<span>Audio Guide</span>
+</button>
+</div>
+</div>
+<!-- Timeline Steps -->
+<div class="flex flex-col gap-6 relative">
+<!-- Step 1 -->
+<div class="flex items-start gap-4 group">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center shadow-sm">
+              1
+            </div>
+<div class="flex flex-col gap-1 pt-0.5">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors">
+                Prepare & Ferment Dough
+              </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                Mix flour, water, yeast, and salt. Knead vigorously for 10 minutes until supple, elastic, and smooth. Form into a round tight ball, cover, and let proof for 2 hours at room temperature until doubled in volume.
+              </p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start gap-4 group">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center shadow-sm">
+              2
+            </div>
+<div class="flex flex-col gap-1 pt-0.5">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors">
+                Shape & Stretch
+              </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                Gently stretch dough by hand from center outward onto semolina flour, preserving the puffy outer ring (<span class="italic font-medium text-on-surface">cornicione</span>). Avoid using a rolling pin so air bubbles stay trapped inside.
+              </p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start gap-4 group">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center shadow-sm">
+              3
+            </div>
+<div class="flex flex-col gap-1 pt-0.5">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors">
+                Sauce & Cheese
+              </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                Spoon crushed San Marzano tomatoes evenly outward in gentle spirals. Scatter torn buffalo mozzarella across the base and finish with a delicate drizzle of extra virgin olive oil.
+              </p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="flex items-start gap-4 group">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center shadow-sm">
+              4
+            </div>
+<div class="flex flex-col gap-1 pt-0.5">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors">
+                Bake at Max Heat
+              </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                Bake on a heavily preheated pizza stone or steel at 500°F (260°C) for 7–9 minutes until the crust is delightfully charred, blistered, and the cheese is fully melted and bubbling.
+              </p>
+</div>
+</div>
+<!-- Step 5 -->
+<div class="flex items-start gap-4 group">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center shadow-sm">
+              5
+            </div>
+<div class="flex flex-col gap-1 pt-0.5">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors">
+                Finish with Fresh Basil
+              </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                Add fresh sweet basil leaves immediately upon taking the pizza out of the oven so essential oils bloom without blackening. Slice into quarters and serve warmly.
+              </p>
+</div>
+</div>
+</div>
+<!-- Chef Tip Banner -->
+<div class="p-4 rounded-xl bg-primary-fixed/40 flex items-start gap-3 mt-2">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">lightbulb</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-primary-fixed">Culinary Master Tip</span>
+<p class="font-body-sm text-body-sm text-on-primary-fixed-variant">
+              Draining your fresh mozzarella in a sieve for at least 30 minutes before baking prevents excess moisture from making the center crust soggy.
+            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer AI Caption -->
+<div class="w-full text-center py-8">
+<p class="font-body-sm text-body-sm text-on-surface-variant/80 flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary-container">auto_awesome</span>
+<span>Recipe generated by AI. Quantities may vary based on ingredient densities.</span>
+</p>
+</div>
+<!-- Inline Micro-Interactions Script -->
+<script>
+    (function initResultInteractions() {
+      // Favorite Button State Toggle
+      const favBtn = document.getElementById('favorite-btn');
+      const favIcon = document.getElementById('favorite-icon');
+      const favLabel = document.getElementById('favorite-label');
+      let isFav = false;
+
+      if (favBtn) {
+        favBtn.addEventListener('click', () => {
+          isFav = !isFav;
+          if (isFav) {
+            favIcon.textContent = 'favorite';
+            favIcon.style.fontVariationSettings = "'FILL' 1";
+            favLabel.textContent = 'Saved in Favorites';
+            favBtn.classList.add('bg-primary-fixed/30');
+          } else {
+            favIcon.textContent = 'favorite_border';
+            favIcon.style.fontVariationSettings = "'FILL' 0";
+            favLabel.textContent = 'Save to Favorites';
+            favBtn.classList.remove('bg-primary-fixed/30');
+          }
+        });
+      }
+
+      // Pantry Counter and Checkbox Dynamics
+      const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+      const counter = document.getElementById('pantry-counter');
+
+      function updateCounter() {
+        if (!counter) return;
+        const total = checkboxes.length;
+        const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+        counter.textContent = `${checked} / ${total}`;
+      }
+
+      checkboxes.forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          const checkCircle = e.target.parentElement.querySelector('div');
+          const checkIcon = checkCircle.querySelector('.material-symbols-outlined');
+          if (e.target.checked) {
+            checkCircle.classList.remove('bg-surface-container');
+            checkCircle.classList.add('bg-secondary');
+            if (checkIcon) checkIcon.classList.remove('opacity-0');
+          } else {
+            checkCircle.classList.remove('bg-secondary');
+            checkCircle.classList.add('bg-surface-container');
+            if (checkIcon) checkIcon.classList.add('opacity-0');
+          }
+          updateCounter();
+        });
+      });
+    })();
+  </script>
+</div></div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)] py-8 mt-auto"><div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-4 font-body-sm text-body-sm text-on-surface-variant"><div class="flex items-center gap-2"><span class="font-label-md text-label-md font-semibold text-on-surface">FoodLens AI</span><span>•</span><span>© 2025 FoodLens AI • Built with FastAPI + React</span></div><div class="flex items-center gap-6 font-label-md text-label-md"><a class="hover:text-primary-container transition-colors" data-path="privacy" href="#">Privacy</a><a class="hover:text-primary-container transition-colors" data-path="api-docs" href="#">API Docs</a><a class="hover:text-primary-container transition-colors" data-path="feedback" href="#">Feedback</a></div></div></footer></body></html>

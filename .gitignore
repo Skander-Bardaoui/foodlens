@@ -1,0 +1,35 @@
+# Secrets / environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# User uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# ML / HF caches
+.cache/
+.huggingface/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

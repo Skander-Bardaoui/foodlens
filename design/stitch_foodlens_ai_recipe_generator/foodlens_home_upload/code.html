@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>FoodLens - AI Culinary Recognition</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "on-secondary-fixed-variant": "#005320",
+        "on-primary-fixed": "#341100",
+        "primary-fixed": "#ffdbca",
+        "on-primary-fixed-variant": "#783200",
+        "primary-container": "#f97316",
+        "tertiary-fixed-dim": "#ffb95f",
+        "surface-bright": "#f8f9ff",
+        "surface": "#f8f9ff",
+        "on-tertiary-fixed": "#2a1700",
+        "on-surface-variant": "#584237",
+        "inverse-on-surface": "#eaf1ff",
+        "on-background": "#121c2a",
+        "on-primary-container": "#582200",
+        "inverse-surface": "#27313f",
+        "on-primary": "#ffffff",
+        "primary": "#9d4300",
+        "tertiary-fixed": "#ffddb8",
+        "tertiary": "#855300",
+        "surface-variant": "#d9e3f6",
+        "on-secondary-fixed": "#002109",
+        "on-surface": "#121c2a",
+        "background": "#f8f9ff",
+        "on-tertiary-fixed-variant": "#653e00",
+        "secondary-container": "#7cf994",
+        "on-tertiary-container": "#492c00",
+        "on-secondary-container": "#007230",
+        "secondary-fixed": "#7ffc97",
+        "surface-tint": "#9d4300",
+        "surface-container-lowest": "#ffffff",
+        "on-secondary": "#ffffff",
+        "surface-container-highest": "#d9e3f6",
+        "primary-fixed-dim": "#ffb690",
+        "tertiary-container": "#d78900",
+        "outline-variant": "#e0c0b1",
+        "error-container": "#ffdad6",
+        "on-error": "#ffffff",
+        "surface-container-high": "#dee9fc",
+        "on-tertiary": "#ffffff",
+        "secondary-fixed-dim": "#62df7d",
+        "error": "#ba1a1a",
+        "on-error-container": "#93000a",
+        "surface-dim": "#d0dbed",
+        "inverse-primary": "#ffb690",
+        "outline": "#8c7164",
+        "secondary": "#006e2d",
+        "surface-container-low": "#eff4ff",
+        "surface-container": "#e6eeff"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+      },
+      "spacing": {
+        "margin": "2rem",
+        "space-xl": "2.5rem",
+        "space-lg": "1.5rem",
+        "space-md": "1rem",
+        "space-xs": "0.25rem",
+        "gutter-mobile": "1rem",
+        "space-sm": "0.5rem",
+        "margin-mobile": "1rem",
+        "gutter": "1.5rem"
+      },
+      "fontFamily": {
+        "body-lg": ["Inter"],
+        "body-sm": ["Inter"],
+        "display-hero": ["Plus Jakarta Sans"],
+        "headline-md": ["Plus Jakarta Sans"],
+        "label-sm": ["Inter"],
+        "headline-lg": ["Plus Jakarta Sans"],
+        "display-hero-mobile": ["Plus Jakarta Sans"],
+        "label-lg": ["Inter"],
+        "body-md": ["Inter"],
+        "headline-sm": ["Plus Jakarta Sans"],
+        "label-md": ["Inter"],
+        "headline-lg-mobile": ["Plus Jakarta Sans"]
+      },
+      "fontSize": {
+        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+        "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+        "display-hero": ["44px", {"lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700"}],
+        "display-hero-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800"}],
+        "label-lg": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+        "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+        "headline-sm": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+        "headline-lg-mobile": ["26px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+      }
+    }
+  }
+}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface min-h-screen flex flex-col antialiased"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-8 flex items-center justify-between"><div class="flex items-center gap-6"><div class="flex items-center gap-3"><img alt="FoodLens Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrAHLgO7YXs6InKx6EXuOrT3a4MbO_WTyyHlgZ6wep4XtApSCqyCalQkbaw1AgrYuwLLe9V66YRaH6ZV7DNBACfIwBr0UHuAlVwp7oTdbDbsE_SwVO-iJq4uK9DkjBOoEDiEp033M1oFtZJAbV_icjNagbvz82crplaJ5fg1VJL1xKVTWhR68OB755iNZM2HZyaHLmpsPmPJiXOSOi1x61nJRg5bIYV4RKaajjUrGtA0"/><span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">FoodLens</span><span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm tracking-wide uppercase">AI Beta</span></div><nav class="hidden md:flex items-center gap-8 h-16" data-active-classes="text-primary-container font-bold border-b-2 border-primary-container"><a aria-current="page" class="h-full flex items-center transition-colors pb-0.5 text-primary-container font-bold border-b-2 border-primary-container" data-path="home" href="#">Analyze</a><a class="h-full flex items-center font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors pb-0.5" data-path="history" href="#">History</a></nav></div><div class="flex items-center gap-4"><button class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all shadow-[0_1px_4px_rgba(0,0,0,0.03)]" type="button"><span class="material-symbols-outlined text-primary-container text-[18px]">cloud_upload</span><span>Quick Scan</span></button><div class="flex items-center gap-3 pl-2"><div class="relative flex items-center justify-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIAmyZgrsHNHKWSQYruO_X-YIrci9tMZIyOjhjMyHCcNVC4MAMrxZgrrTXfoKZStTRtlyT75QhOO_OxFjbvHdof9uk9j5qthjyd8NYOFwfRIuwsLT4LVfK9o1gxo-0iJgpoTs65AhGXwTn-0YcHyqXRy0ZOvsTJqllZisNEsvK5SRsRd14NfcSK23Vpk9Jr2bVowjRKAUXX5m9OEfDNrg8dpFb2k4Ijs4qwxg9rOE"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary ring-2 ring-surface-container-lowest"></span></div></div></div></div></header><main class="w-full pt-16 flex-1 bg-surface"><div class="max-w-7xl mx-auto px-8 py-8"><div class="flex flex-col w-full gap-16">
+<!-- Top Hero Visual & Copy Cluster -->
+<section class="relative w-full flex flex-col items-center text-center max-w-4xl mx-auto pt-4">
+<!-- Subtle Ambient Backdrop Blur Ring -->
+<div class="absolute -top-16 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-container/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<!-- AI Tag Badge -->
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-fixed text-on-primary-fixed shadow-sm mb-6 transition-transform hover:scale-105 cursor-default">
+<span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-md text-label-md tracking-wide">AI Food Identification & Recipe Engine</span>
+</div>
+<!-- Editorial Primary Headline -->
+<h1 class="font-display-hero text-display-hero text-on-surface tracking-tight mb-4 max-w-3xl">
+      Snap a dish. <span class="text-primary-container">Get the recipe.</span>
+</h1>
+<!-- Supporting Narrative -->
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl text-center leading-relaxed">
+      Instantly identify ingredients, get accurate confidence scores, and unlock chef-tested step-by-step recipes from a single photo.
+    </p>
+<!-- Quick Stat Chips -->
+<div class="flex flex-wrap items-center justify-center gap-6 mt-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">1,400+ Cuisines Mapped</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Sub-second Inference</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Dietary & Allergen Alerts</span>
+</div>
+</div>
+</section>
+<!-- Interactive Dual-State Upload & Viewfinder Canvas -->
+<section class="w-full max-w-5xl mx-auto">
+<div class="bg-surface-container-lowest rounded-xl shadow-xl overflow-hidden p-3 md:p-4">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+<!-- Left Pane: Dropzone Active / Interactive Target -->
+<div class="lg:col-span-7 flex flex-col justify-between bg-surface-container-low rounded-lg p-8 relative overflow-hidden group transition-all" id="dropzoneContainer">
+<!-- Ambient Dropzone Subtle Corner Guides -->
+<div class="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-primary-container/40 rounded-tl pointer-events-none"></div>
+<div class="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-primary-container/40 rounded-tr pointer-events-none"></div>
+<div class="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-primary-container/40 rounded-bl pointer-events-none"></div>
+<div class="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-primary-container/40 rounded-br pointer-events-none"></div>
+<div class="flex flex-col items-center justify-center my-auto py-8 text-center cursor-pointer select-none" id="dropTrigger">
+<div class="w-20 h-20 rounded-full bg-primary-fixed flex items-center justify-center mb-5 text-primary shadow-sm group-hover:scale-110 group-hover:bg-primary-container group-hover:text-on-primary transition-all duration-300">
+<span class="material-symbols-outlined text-[38px]">add_a_photo</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-bold">
+              Drop your food photo here or click to browse
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-sm mb-6">
+              Supports high-resolution mobile snaps, overhead culinary captures, and plated portraits.
+            </p>
+<div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">verified</span>
+                JPG, PNG, WEBP
+              </span>
+<span>•</span>
+<span>Max 15 MB</span>
+<span>•</span>
+<span>Auto EXIF Correction</span>
+</div>
+</div>
+<!-- Bottom Action Hint -->
+<div class="flex items-center justify-between pt-4 mt-auto">
+<button class="flex items-center gap-2 font-label-md text-label-md text-primary hover:text-primary-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+<span>Use Live Web Camera</span>
+</button>
+<button class="flex items-center gap-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors" id="sampleDishBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">restaurant_menu</span>
+<span>Load Sample Dish</span>
+</button>
+</div>
+</div>
+<!-- Right Pane: Prepared Stage / Pending Dish Analysis Blueprint -->
+<div class="lg:col-span-5 flex flex-col justify-between bg-surface-container rounded-lg p-6 shadow-sm">
+<div>
+<!-- Header bar of the preview card -->
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-container animate-pulse"></span>
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Staged for Parsing</span>
+</div>
+<span class="font-label-sm text-label-sm px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-semibold">
+                Ready to analyze
+              </span>
+</div>
+<!-- Image Stage Preview Card -->
+<div class="relative w-full h-56 rounded-lg overflow-hidden shadow-md group">
+<img alt="Staged artisan pizza" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Overhead gourmet Neapolitan wood-fired artisan pizza with charred crispy bubbly crust, melted fresh buffalo mozzarella pools, vibrant red San Marzano tomato sauce, fresh bright green basil leaves, and a glossy drizzle of golden olive oil on rustic dark slate tile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvWK96bmKoWNLrra-WbcR-qFqkCl1AMZiNVrqlXfKY8DWGsjgwNbEYmu4Ro5O7pMs3yWu5MWBx2jYklr4mkpCLHUTt-Rf1G9WO5lDUDBcDnoYTYMoxxGgIJAHFZsVzxIxGfZnKwSmTzFwQn7Ewi54jjoWn_M-QVrmRghVOv9hlJN-hnEsIe39JCgrRze4imMfthKMf_9kmn_uXw_L9ZAhxamUkDZIbMnaBMx5aL0c"/>
+<!-- Floating Visual Detection Pins -->
+<div class="absolute top-4 left-6 px-2.5 py-1 rounded-full bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-sm text-label-sm flex items-center gap-1.5 shadow-md">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span>Basilico Genovese</span>
+</div>
+<div class="absolute bottom-5 right-6 px-2.5 py-1 rounded-full bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-sm text-label-sm flex items-center gap-1.5 shadow-md">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
+<span>Fior di Latte</span>
+</div>
+<!-- Quick Discard Action -->
+<button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-inverse-surface/80 hover:bg-error text-inverse-on-surface hover:text-on-error flex items-center justify-center transition-all shadow-sm" title="Remove image" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Metadata specs -->
+<div class="mt-4 flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-2 truncate">
+<span class="material-symbols-outlined text-[16px] text-primary">image</span>
+<span class="font-semibold text-on-surface truncate">artisan_pizza_sample.jpg</span>
+</div>
+<span class="whitespace-nowrap font-medium">2.4 MB • 3024 × 4032</span>
+</div>
+<!-- Pre-scan feature extraction spark -->
+<div class="mt-4 bg-surface-container-lowest p-3.5 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container text-[20px]">psychology</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-tight">
+                Deep model detects <strong class="font-semibold text-primary">crust blistering</strong> & <strong class="font-semibold text-primary">cheese emulsion</strong> signatures.
+              </p>
+</div>
+</div>
+<!-- Primary Execution CTA -->
+<div class="pt-6 mt-6">
+<button class="w-full py-4 px-6 rounded-full bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-3 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]" id="analyzeActionBtn" type="button">
+<span class="material-symbols-outlined text-[24px]">troubleshoot</span>
+<span>Analyze this dish</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<p class="font-label-sm text-label-sm text-center text-on-surface-variant mt-2">
+              Instant analysis consumes 1 free compute credit
+            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Process Methodology (3 Bento Steps) -->
+<section class="w-full max-w-5xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">Culinary Intelligence Flow</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold mt-1">From viewfinder to table in 3 seconds</h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-md">
+        Trained on over 2.4 million professional recipes, FoodLens translates raw pixels into clear culinary execution steps.
+      </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Step 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow relative flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined text-[24px]">camera</span>
+</div>
+<span class="font-display-hero text-headline-lg font-black text-surface-container-highest">01</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-2">1. Upload Photo</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+            Take a picture or drop any dish image from your computer or camera roll. High or low lighting is handled automatically.
+          </p>
+</div>
+<div class="mt-6 pt-4 flex items-center gap-2 text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">fit_screen</span>
+<span>Automatic framing & crop</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow relative flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-[24px]">neurology</span>
+</div>
+<span class="font-display-hero text-headline-lg font-black text-surface-container-highest">02</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-2">2. AI Recognizes Dish</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+            Our deep culinary vision model detects key visual cues, seasoning garnishes, sauce viscosities, and core ingredients in seconds.
+          </p>
+</div>
+<div class="mt-6 pt-4 flex items-center gap-2 text-tertiary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">query_stats</span>
+<span>99.2% ingredient confidence</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow relative flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[24px]">skillet</span>
+</div>
+<span class="font-display-hero text-headline-lg font-black text-surface-container-highest">03</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-2">3. Get Full Recipe</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+            Receive step-by-step instructions, interactive ingredient checklists, dietary substitutes, and calibrated macro breakdowns.
+          </p>
+</div>
+<div class="mt-6 pt-4 flex items-center gap-2 text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">checklist</span>
+<span>Step-by-step interactive cooking</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Live Macro & Community Pulse Infographic Strip -->
+<section class="w-full max-w-5xl mx-auto bg-surface-container rounded-xl p-8 relative overflow-hidden shadow-sm">
+<div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+<div class="max-w-md">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold uppercase tracking-wider">Culinary Benchmarks</span>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mt-2">Designed for home cooks, tuned by master chefs</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">
+          From street food carts to Michelin-star plates, FoodLens segments complex multi-component dishes into replicable home steps.
+        </p>
+</div>
+<!-- Inline Compact Data SVG Graph Representation -->
+<div class="w-full lg:w-auto flex-1 flex flex-col sm:flex-row items-center justify-end gap-6">
+<!-- Metric 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-lg w-full sm:w-44 text-center shadow-sm">
+<div class="flex justify-center mb-2">
+<svg class="w-12 h-12 -rotate-90 text-primary-container" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="94, 100" stroke-linecap="round" stroke-width="3.2"></path>
+</svg>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-on-surface">94.8%</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant mt-0.5">Top-1 Accuracy</span>
+</div>
+<!-- Metric 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-lg w-full sm:w-44 text-center shadow-sm">
+<div class="flex justify-center mb-2">
+<svg class="w-12 h-12 -rotate-90 text-secondary" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-secondary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="88, 100" stroke-linecap="round" stroke-width="3.2"></path>
+</svg>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-on-surface">650ms</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant mt-0.5">Median Latency</span>
+</div>
+<!-- Metric 3 -->
+<div class="bg-surface-container-lowest p-5 rounded-lg w-full sm:w-44 text-center shadow-sm">
+<div class="flex justify-center mb-2">
+<svg class="w-12 h-12 -rotate-90 text-tertiary-container" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-tertiary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="98, 100" stroke-linecap="round" stroke-width="3.2"></path>
+</svg>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-on-surface">98.4%</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant mt-0.5">Macro Precision</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Analyses Feed Strip -->
+<section class="w-full max-w-5xl mx-auto mb-6">
+<div class="flex items-center justify-between mb-6">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Community Detections</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">Recent Analyses</h2>
+</div>
+<a class="group flex items-center gap-1.5 font-label-md text-label-md font-semibold text-primary hover:text-primary-container transition-colors" data-path="history" href="#">
+<span>View all history</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</a>
+</div>
+<!-- 4 Horizontal Thumbnail Cards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer">
+<div class="relative w-full h-40 overflow-hidden bg-surface-container">
+<img alt="Margherita Pizza" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Top-down close-up shot of freshly sliced Margherita Pizza on parchment paper with aromatic charred crust edge, melted bubbling mozzarella cheese pools, fresh Italian basil sprigs, and olive oil shimmer in natural warm window lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8ljd9Z90Bc8wzZKuSRZevsks_hNBFiItAPiajeW1FtG4olIW4iPwdEv723QnqLJljENk6xPAew_IjH4Ie9muRUJGcRN50zW0yqn8q0jO4YOOeaK5oiQ5kGZDVYb8KhtDj_dIy7HgQVZXp2gaX26lep3l9NC30fqDfKcEnLP39LSGusTJ2Y9prfTth6_t1KO013DK2YuvXsOGbpU_itCwXLRvV-OE6NcfTPguf6SA"/>
+<div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-secondary-container/95 text-on-secondary-container font-label-sm text-label-sm font-bold shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span>94% match</span>
+</div>
+<div class="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded-full bg-inverse-surface/80 text-inverse-on-surface font-label-sm text-label-sm">
+            Italian
+          </div>
+</div>
+<div class="p-4 flex flex-col justify-between flex-1">
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors truncate">
+              Margherita Pizza
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">
+              San Marzano, Buffalo Mozzarella, Basil
+            </p>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>12 mins ago</span>
+</span>
+<span class="font-semibold text-primary">View →</span>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer">
+<div class="relative w-full h-40 overflow-hidden bg-surface-container">
+<img alt="Shakshuka with Feta" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Warm rustic cast iron skillet filled with simmering Moroccan Shakshuka, vibrant spiced red bell pepper and tomato stew, topped with perfectly poached runny eggs, sprinkled salty sheep feta crumbles, and fresh chopped cilantro garnish in soft diffused daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3l-h08VOUUTew9LV8-S_APyaCRFvpGwHB2ipnptbPTnZsUCXGQLNPrO9Lz8zYw4faFpTa3Ej-fwb8n1BuL70zo7CP1hqBbtIy91pgjDCoTL7JkBv3TTLOo6vj-dchIvtSv-FDoLcTf5gye8CnAzroLqWk64Hxeo4SBXY0VDdjvr4AwMowrpVDfmUUpwwe_LcfY4kXT9_zb9-cVzPVGq8iReRrgB8PD0GDlodXouY"/>
+<div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-secondary-container/95 text-on-secondary-container font-label-sm text-label-sm font-bold shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span>98% match</span>
+</div>
+<div class="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded-full bg-inverse-surface/80 text-inverse-on-surface font-label-sm text-label-sm">
+            Middle Eastern
+          </div>
+</div>
+<div class="p-4 flex flex-col justify-between flex-1">
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors truncate">
+              Shakshuka with Feta
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">
+              Poached Eggs, Spiced Tomatoes, Bell Pepper
+            </p>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>2 hours ago</span>
+</span>
+<span class="font-semibold text-primary">View →</span>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer">
+<div class="relative w-full h-40 overflow-hidden bg-surface-container">
+<img alt="Tonkotsu Ramen" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Traditional ceramic bowl of rich Tonkotsu Ramen with silky opaque pork bone broth, springy yellow wheat noodles, tender rolled chashu pork belly slices, a soft-boiled jammy ajitsuke tamago egg sliced in half, nori sheet, and finely sliced green scallions." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQHWkvKm7L_vHpxzdLFxz7QLfc8ZaR6p4OcBQ_TjSZaxRrtcdUfDMKWDC6kunNNnr4_RVuwhuw1auj8JnUy0N3YZgWQswGOxO0U-CYs0l-cNyZgM-ni0ND0WGJ4FlK2Wui8XkrncjcM_3nylaixiflYUpJb5Pn2zf8HOf4bdumWuepvuECHn_2-KYwQ-a8L_97_A1JqaYnL9vClBiCJQw8zo0kfJA7pGPaaiK18eg"/>
+<div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+<span>89% match</span>
+</div>
+<div class="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded-full bg-inverse-surface/80 text-inverse-on-surface font-label-sm text-label-sm">
+            Japanese
+          </div>
+</div>
+<div class="p-4 flex flex-col justify-between flex-1">
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors truncate">
+              Tonkotsu Ramen
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">
+              Pork Broth, Chashu Belly, Ajitsuke Tamago
+            </p>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>Yesterday</span>
+</span>
+<span class="font-semibold text-primary">View →</span>
+</div>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer">
+<div class="relative w-full h-40 overflow-hidden bg-surface-container">
+<img alt="Avocado Tartine" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Artisanal seeded sourdough Avocado Tartine on a ceramic brunch plate, thickly spread with creamy mashed ripe Hass avocado, sliced baby radishes, toasted hemp seeds, chili flakes, delicate microgreens, and a squeeze of fresh lemon juice." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVwokHipP81xzZ25GkclIiZNV0XbnzgkmU0wCZuWivIVbKfRDjT1TPQKuk54faGHPrPB43FPARz_1urcN10pgU2Osinj3yOmubCR-ARC1hBxDixghIZ0RL4DfyVShgklGy1csr_aY6gHIZyfOZfhnwVAvGI65Tf5dUccvESPGrjUU9R0Xd2MjEO9NnB10FhC16-LsPynnUN63AQN6jd2Zy-f1729onytSJs4UEzsk"/>
+<div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-secondary-container/95 text-on-secondary-container font-label-sm text-label-sm font-bold shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span>96% match</span>
+</div>
+<div class="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded-full bg-inverse-surface/80 text-inverse-on-surface font-label-sm text-label-sm">
+            Breakfast / Brunch
+          </div>
+</div>
+<div class="p-4 flex flex-col justify-between flex-1">
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors truncate">
+              Avocado Tartine
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">
+              Crusty Sourdough, Ripe Hass, Radish, Chili
+            </p>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>2 days ago</span>
+</span>
+<span class="font-semibold text-primary">View →</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Lightweight Inline JS for Interactive State Simulation -->
+<script>
+    (function initFoodLensUploadPage() {
+      const dropContainer = document.getElementById('dropzoneContainer');
+      const dropTrigger = document.getElementById('dropTrigger');
+      const analyzeBtn = document.getElementById('analyzeActionBtn');
+      const sampleBtn = document.getElementById('sampleDishBtn');
+
+      if (!dropContainer || !analyzeBtn) return;
+
+      // Drag over effect handling
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropContainer.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          dropContainer.classList.add('bg-primary-fixed/20');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropContainer.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          dropContainer.classList.remove('bg-primary-fixed/20');
+        });
+      });
+
+      // Simulated Analyze Click Transition
+      analyzeBtn.addEventListener('click', () => {
+        const originalContent = analyzeBtn.innerHTML;
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = `
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Recognizing culinary profile...</span>
+        `;
+        setTimeout(() => {
+          analyzeBtn.innerHTML = `
+            <span class="material-symbols-outlined text-[24px]">done_all</span>
+            <span>Identified 94% Margherita Pizza!</span>
+          `;
+          setTimeout(() => {
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = originalContent;
+          }, 2400);
+        }, 1600);
+      });
+
+      // Sample Button Feedback
+      if (sampleBtn) {
+        sampleBtn.addEventListener('click', () => {
+          const original = sampleBtn.innerHTML;
+          sampleBtn.innerHTML = `<span class="material-symbols-outlined text-[18px] text-secondary">check</span><span>Sample Loaded!</span>`;
+          setTimeout(() => {
+            sampleBtn.innerHTML = original;
+          }, 1800);
+        });
+      }
+    })();
+  </script>
+</div></div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)] py-8 mt-auto"><div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-4 font-body-sm text-body-sm text-on-surface-variant"><div class="flex items-center gap-2"><span class="font-label-md text-label-md font-semibold text-on-surface">FoodLens AI</span><span>•</span><span>© 2025 FoodLens AI • Built with FastAPI + React</span></div><div class="flex items-center gap-6 font-label-md text-label-md"><a class="hover:text-primary-container transition-colors" data-path="privacy" href="#">Privacy</a><a class="hover:text-primary-container transition-colors" data-path="api-docs" href="#">API Docs</a><a class="hover:text-primary-container transition-colors" data-path="feedback" href="#">Feedback</a></div></div></footer></body></html>

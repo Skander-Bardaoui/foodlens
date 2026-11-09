@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>FoodLens - AI Culinary Recognition</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "on-secondary-fixed-variant": "#005320",
+        "on-primary-fixed": "#341100",
+        "primary-fixed": "#ffdbca",
+        "on-primary-fixed-variant": "#783200",
+        "primary-container": "#f97316",
+        "tertiary-fixed-dim": "#ffb95f",
+        "surface-bright": "#f8f9ff",
+        "surface": "#f8f9ff",
+        "on-tertiary-fixed": "#2a1700",
+        "on-surface-variant": "#584237",
+        "inverse-on-surface": "#eaf1ff",
+        "on-background": "#121c2a",
+        "on-primary-container": "#582200",
+        "inverse-surface": "#27313f",
+        "on-primary": "#ffffff",
+        "primary": "#9d4300",
+        "tertiary-fixed": "#ffddb8",
+        "tertiary": "#855300",
+        "surface-variant": "#d9e3f6",
+        "on-secondary-fixed": "#002109",
+        "on-surface": "#121c2a",
+        "background": "#f8f9ff",
+        "on-tertiary-fixed-variant": "#653e00",
+        "secondary-container": "#7cf994",
+        "on-tertiary-container": "#492c00",
+        "on-secondary-container": "#007230",
+        "secondary-fixed": "#7ffc97",
+        "surface-tint": "#9d4300",
+        "surface-container-lowest": "#ffffff",
+        "on-secondary": "#ffffff",
+        "surface-container-highest": "#d9e3f6",
+        "primary-fixed-dim": "#ffb690",
+        "tertiary-container": "#d78900",
+        "outline-variant": "#e0c0b1",
+        "error-container": "#ffdad6",
+        "on-error": "#ffffff",
+        "surface-container-high": "#dee9fc",
+        "on-tertiary": "#ffffff",
+        "secondary-fixed-dim": "#62df7d",
+        "error": "#ba1a1a",
+        "on-error-container": "#93000a",
+        "surface-dim": "#d0dbed",
+        "inverse-primary": "#ffb690",
+        "outline": "#8c7164",
+        "secondary": "#006e2d",
+        "surface-container-low": "#eff4ff",
+        "surface-container": "#e6eeff"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+      },
+      "spacing": {
+        "margin": "2rem",
+        "space-xl": "2.5rem",
+        "space-lg": "1.5rem",
+        "space-md": "1rem",
+        "space-xs": "0.25rem",
+        "gutter-mobile": "1rem",
+        "space-sm": "0.5rem",
+        "margin-mobile": "1rem",
+        "gutter": "1.5rem"
+      },
+      "fontFamily": {
+        "body-lg": ["Inter"],
+        "body-sm": ["Inter"],
+        "display-hero": ["Plus Jakarta Sans"],
+        "headline-md": ["Plus Jakarta Sans"],
+        "label-sm": ["Inter"],
+        "headline-lg": ["Plus Jakarta Sans"],
+        "display-hero-mobile": ["Plus Jakarta Sans"],
+        "label-lg": ["Inter"],
+        "body-md": ["Inter"],
+        "headline-sm": ["Plus Jakarta Sans"],
+        "label-md": ["Inter"],
+        "headline-lg-mobile": ["Plus Jakarta Sans"]
+      },
+      "fontSize": {
+        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+        "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+        "display-hero": ["44px", {"lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700"}],
+        "display-hero-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800"}],
+        "label-lg": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+        "body-md": ["15px", {"lineHeight": "24px", "fontWeight": "400"}],
+        "headline-sm": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+        "headline-lg-mobile": ["26px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+      }
+    }
+  }
+}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface min-h-screen flex flex-col antialiased"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-8 flex items-center justify-between"><div class="flex items-center gap-6"><div class="flex items-center gap-3"><img alt="FoodLens Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrAHLgO7YXs6InKx6EXuOrT3a4MbO_WTyyHlgZ6wep4XtApSCqyCalQkbaw1AgrYuwLLe9V66YRaH6ZV7DNBACfIwBr0UHuAlVwp7oTdbDbsE_SwVO-iJq4uK9DkjBOoEDiEp033M1oFtZJAbV_icjNagbvz82crplaJ5fg1VJL1xKVTWhR68OB755iNZM2HZyaHLmpsPmPJiXOSOi1x61nJRg5bIYV4RKaajjUrGtA0"/><span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">FoodLens</span><span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm tracking-wide uppercase">AI Beta</span></div><nav class="hidden md:flex items-center gap-8 h-16" data-active-classes="text-primary-container font-bold border-b-2 border-primary-container"><a class="h-full flex items-center font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors pb-0.5" data-path="home" href="#">Analyze</a><a class="h-full flex items-center font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors pb-0.5" data-path="history" href="#">History</a></nav></div><div class="flex items-center gap-4"><button class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all shadow-[0_1px_4px_rgba(0,0,0,0.03)]" type="button"><span class="material-symbols-outlined text-primary-container text-[18px]">cloud_upload</span><span>Quick Scan</span></button><div class="flex items-center gap-3 pl-2"><div class="relative flex items-center justify-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIAmyZgrsHNHKWSQYruO_X-YIrci9tMZIyOjhjMyHCcNVC4MAMrxZgrrTXfoKZStTRtlyT75QhOO_OxFjbvHdof9uk9j5qthjyd8NYOFwfRIuwsLT4LVfK9o1gxo-0iJgpoTs65AhGXwTn-0YcHyqXRy0ZOvsTJqllZisNEsvK5SRsRd14NfcSK23Vpk9Jr2bVowjRKAUXX5m9OEfDNrg8dpFb2k4Ijs4qwxg9rOE"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary ring-2 ring-surface-container-lowest"></span></div></div></div></div></header><main class="w-full pt-16 flex-1 bg-surface"><div class="max-w-7xl mx-auto px-8 py-8"><div class="flex flex-col w-full">
+<div class="w-full flex items-center justify-between pb-8">
+<div class="flex items-center gap-3 bg-surface-container-lowest px-4 py-2 rounded-full shadow-sm">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary-container"></span>
+</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Analyzing your dish...</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full ml-1 font-bold">In Progress</span>
+</div>
+<div class="hidden md:flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px] text-primary-container">timer</span>
+<span>Estimated remaining: <strong class="text-on-surface" id="countdown-timer">2s</strong></span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<div class="lg:col-span-6 flex flex-col gap-5">
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm p-4 relative group">
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-surface-container-high">
+<img alt="Uploaded culinary dish preview" class="w-full h-full object-cover select-none" data-alt="A vibrant artisan Neapolitan Margherita pizza fresh from a wood-fired brick oven. Charred leopard-spot bubbly crust, melted buffalo mozzarella pools, vibrant red crushed San Marzano tomato sauce, fresh bright basil leaves glistening with extra virgin olive oil drizzle. Cinematic warm kitchen restaurant lighting, overhead 45-degree angle, rustic slate table." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTuQpda685nGCvXgxuDLKFvMyVnLo_JnYrv9kEf8d2Yw13gpZf2sj7WHgUEiv2nJ-kjn2lxmQSGCHjMOLO4Ej2WIY9OCGNWgj44-5O7sotScPqGx0kALjkXdyrnziGT_3Uvlyq7aV-dwD3nGjZjsuoNhOlOCTSkkHTZoeOc0dP04sOWUPoJmGtsP1PXpQ9yNLt-3OvnCVcmfqleDKgLrhiD3fg8_RDJQD0uk89q9k"/>
+<div class="absolute inset-0 pointer-events-none overflow-hidden">
+<div class="w-full h-24 bg-gradient-to-b from-primary-container/0 via-primary-container/20 to-primary-container/40 absolute top-0 -translate-y-full animate-[scan_2.8s_ease-in-out_infinite]"></div>
+<div class="absolute inset-x-0 h-0.5 bg-primary-container/80 shadow-[0_0_12px_rgba(249,115,22,0.8)] top-0 -translate-y-full animate-[scan_2.8s_ease-in-out_infinite]"></div>
+</div>
+<div class="absolute top-3 left-3 bg-inverse-surface/85 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-inverse-on-surface text-[16px] animate-spin">sync</span>
+<span class="font-label-sm text-label-sm text-inverse-on-surface font-semibold tracking-wide">Vision AI Active</span>
+</div>
+<div class="absolute bottom-3 right-3 bg-inverse-surface/75 backdrop-blur-md px-2.5 py-1 rounded-full text-inverse-on-surface font-label-sm text-label-sm flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+<span>1920 × 1440</span>
+</div>
+</div>
+<div class="mt-4 pt-3 flex flex-wrap items-center justify-between gap-3 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[20px] text-primary-container">image</span>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">IMG_4092_woodfire.jpg</span>
+<span class="text-outline">•</span>
+<span>3.2 MB</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>Uploaded just now</span>
+</div>
+</div>
+</div>
+<button class="w-full py-4 px-6 rounded-full bg-surface-container-high text-on-surface-variant font-label-lg text-label-lg flex items-center justify-center gap-3 cursor-not-allowed opacity-90 transition-all select-none" disabled="" type="button">
+<svg class="animate-spin h-5 w-5 text-primary-container" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" fill="currentColor"></path>
+</svg>
+<span class="font-semibold text-on-surface">Analyzing dish...</span>
+<span class="text-on-surface-variant font-normal">(ETA <span id="btn-countdown">2s</span>)</span>
+</button>
+<div class="bg-surface-container-low rounded-xl p-4 flex items-start gap-3">
+<span class="material-symbols-outlined text-primary-container text-[20px] shrink-0 mt-0.5">lightbulb</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+<strong class="font-label-md text-label-md text-on-surface">Pro tip:</strong> FoodLens analyzes charred blister formations and emulsified fat layers to accurately differentiate authentic Neapolitan style from standard stone-baked crusts.
+        </p>
+</div>
+</div>
+<div class="lg:col-span-6 flex flex-col gap-6">
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between pb-4 mb-4 bg-surface-container-low px-4 py-2.5 rounded-lg">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Culinary Pipeline</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold tracking-wide uppercase">Stage 1 of 3</span>
+</div>
+<div class="relative flex flex-col gap-6">
+<div class="absolute left-5 top-7 bottom-7 w-0.5 bg-surface-container-high -z-0"></div>
+<div class="relative z-10 flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-md">
+<svg class="animate-spin h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle class="opacity-30" cx="12" cy="12" r="10" stroke-width="3"></circle>
+<path class="opacity-90" d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex items-center justify-between">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-bold">Recognizing the dish</h4>
+<span class="px-2 py-0.5 bg-primary-fixed text-on-primary-fixed rounded-full font-label-sm text-label-sm uppercase font-semibold animate-pulse">Scanning</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Scanning food texture, crust patterns, and toppings...</p>
+<div class="mt-3 w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary-container h-1.5 rounded-full animate-[progressPulse_2s_infinite]" style="width: 72%;"></div>
+</div>
+</div>
+</div>
+<div class="relative z-10 flex items-start gap-4 opacity-75">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-label-md text-label-md font-bold shrink-0">
+              2
+            </div>
+<div class="flex-1 pt-1">
+<div class="flex items-center justify-between">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Finding ingredients</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Queued</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Extracting basil, buffalo mozzarella, San Marzano tomatoes...</p>
+</div>
+</div>
+<div class="relative z-10 flex items-start gap-4 opacity-50">
+<div class="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-label-md text-label-md font-bold shrink-0">
+              3
+            </div>
+<div class="flex-1 pt-1">
+<div class="flex items-center justify-between">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Writing the recipe</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Waiting</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Formulating temperature, prep steps, and baking instructions...</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Recipe Preview Generation</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-primary-container font-semibold">Synthesizing</span>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between gap-4">
+<div class="h-8 w-3/5 bg-surface-container-high rounded-lg animate-pulse"></div>
+<div class="h-6 w-24 bg-surface-container-high rounded-full animate-pulse"></div>
+</div>
+<div class="h-4 w-4/5 bg-surface-container rounded-lg animate-pulse"></div>
+</div>
+<div class="space-y-3 pt-2">
+<div class="h-4 w-32 bg-surface-container-high rounded animate-pulse"></div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container-low animate-pulse">
+<div class="w-4 h-4 rounded-full bg-surface-container-high shrink-0"></div>
+<div class="h-3.5 w-20 bg-surface-container-high rounded"></div>
+</div>
+<div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container-low animate-pulse">
+<div class="w-4 h-4 rounded-full bg-surface-container-high shrink-0"></div>
+<div class="h-3.5 w-24 bg-surface-container-high rounded"></div>
+</div>
+<div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container-low animate-pulse">
+<div class="w-4 h-4 rounded-full bg-surface-container-high shrink-0"></div>
+<div class="h-3.5 w-16 bg-surface-container-high rounded"></div>
+</div>
+</div>
+</div>
+<div class="space-y-3 pt-2">
+<div class="h-4 w-28 bg-surface-container-high rounded animate-pulse"></div>
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low animate-pulse">
+<div class="w-5 h-5 rounded-full bg-surface-container-high shrink-0"></div>
+<div class="h-3.5 w-full bg-surface-container-high rounded"></div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low animate-pulse">
+<div class="w-5 h-5 rounded-full bg-surface-container-high shrink-0"></div>
+<div class="h-3.5 w-5/6 bg-surface-container-high rounded"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-10 py-4 px-6 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-2 text-center sm:text-left">
+<span class="material-symbols-outlined text-primary-container text-[20px] shrink-0">tips_and_updates</span>
+<span><strong>Tip:</strong> FoodLens works best on well-lit photos showing top-down or 45° food angles.</span>
+</div>
+<div class="flex items-center gap-4 shrink-0 text-on-surface font-label-md text-label-md">
+<span class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+        Neural Engine 4.2
+      </span>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    let timeLeft = 2.4;
+    const timerEl = document.getElementById('countdown-timer');
+    const btnTimerEl = document.getElementById('btn-countdown');
+
+    const interval = setInterval(() => {
+      timeLeft = Math.max(0, timeLeft - 0.2);
+      const formatted = timeLeft.toFixed(1) + 's';
+      if (timerEl) timerEl.textContent = formatted;
+      if (btnTimerEl) btnTimerEl.textContent = formatted;
+      
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+      }
+    }, 200);
+  })();
+</script></div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)] py-8 mt-auto"><div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-4 font-body-sm text-body-sm text-on-surface-variant"><div class="flex items-center gap-2"><span class="font-label-md text-label-md font-semibold text-on-surface">FoodLens AI</span><span>•</span><span>© 2025 FoodLens AI • Built with FastAPI + React</span></div><div class="flex items-center gap-6 font-label-md text-label-md"><a class="hover:text-primary-container transition-colors" data-path="privacy" href="#">Privacy</a><a class="hover:text-primary-container transition-colors" data-path="api-docs" href="#">API Docs</a><a class="hover:text-primary-container transition-colors" data-path="feedback" href="#">Feedback</a></div></div></footer></body></html>
