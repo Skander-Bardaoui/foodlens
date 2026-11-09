@@ -31,6 +31,7 @@ export default function HistoryCard({ analysis, onDelete }: HistoryCardProps) {
       padding="none"
       role="link"
       tabIndex={0}
+      data-analysis-id={analysis.id}
       aria-label={`Open analysis for ${analysis.label}`}
       onClick={openResult}
       onKeyDown={(event) => {
