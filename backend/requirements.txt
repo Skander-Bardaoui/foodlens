@@ -12,8 +12,10 @@ Pillow==11.0.0
 httpx==0.28.1
 pytest==8.3.4
 
-# ML runtime. The Dockerfile installs the CPU-only torch wheel from
-# https://download.pytorch.org/whl/cpu before this file, so this entry
-# is already satisfied and no CUDA build is pulled in.
+# ML runtime. The Dockerfile installs the CPU-only torch and torchvision wheels
+# from https://download.pytorch.org/whl/cpu before this file, so these entries
+# are already satisfied and no CUDA build is pulled in.
+huggingface_hub==0.36.2
 transformers==4.47.1
-torch
+torch==2.15.0
+torchvision==0.29.2

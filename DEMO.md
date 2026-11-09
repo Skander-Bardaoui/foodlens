@@ -61,11 +61,11 @@ Say: "Analyses are persisted in PostgreSQL. Delete asks for confirmation and rem
 
 Action: open http://localhost:8000/docs in a second tab briefly, or show the green "API online" badge.
 
-Say: "The API is FastAPI with OpenAPI docs, the model is a Food-101 ViT on CPU, and data lives in PostgreSQL. Known limits: 101 dish classes and AI-written recipes that should be reviewed."
+Say: "The API is FastAPI with OpenAPI docs, recognition runs Food-101 plus a regional classifier for couscous and mloukhiya on CPU, and data lives in PostgreSQL. Known limits: Food-101's 101 classes, narrow regional coverage and AI-written recipes that should be reviewed."
 
 ## If something goes wrong
 
 - **502 on a confident photo:** LLM key is missing or unreachable. Check `docker compose logs api` and `.env`.
-- **First analysis is slow:** the Food-101 model is downloading; later runs use the cached volume.
+- **First analysis is slow:** Food-101, the regional classifier or CLIP is downloading; later runs use the cached volume.
 - **Upload rejected:** the file must be JPG/PNG and under 5 MB.
 - **Port already in use:** set `WEB_PORT` / `API_PORT` in `.env` and restart Compose.

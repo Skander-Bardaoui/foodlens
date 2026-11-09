@@ -239,7 +239,7 @@ export default function StyleguidePage() {
       <Section id="step-cards" title="Step cards" description="Bento-style onboarding cards with oversized ghost numbering.">
         <div className="grid gap-4 md:grid-cols-3">
           <StepCard step={1} title="Snap your plate" description="Use natural light and a top-down or 45° angle for the sharpest recognition." icon={Camera} accent="brand" />
-          <StepCard step={2} title="AI identifies it" description="Our Food-101 vision model scores the dish and surfaces confidence instantly." icon={ScanEye} accent="warning" />
+          <StepCard step={2} title="AI identifies it" description="Our vision models score the dish and surface confidence instantly." icon={ScanEye} accent="warning" />
           <StepCard step={3} title="Cook the recipe" description="Follow generated steps, track ingredients and save the result to history." icon={ScrollText} accent="accent" />
         </div>
       </Section>

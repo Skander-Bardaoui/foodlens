@@ -6,6 +6,7 @@ FoodLens identifies a dish from a food photo, shows the model's top-3 prediction
 
 - Photo upload with JPEG/PNG validation and a 5 MB limit.
 - Food-101 image classification with a Hugging Face ViT model running on CPU.
+- Regional recognition for couscous and mloukhiya using a second dish classifier, with CLIP arbitration against confident Food-101 mistakes.
 - Top-3 predictions and a confidence score.
 - Uncertainty handling: below 40% confidence the API skips the LLM and returns no recipe.
 - AI recipe generation through Groq, or any OpenAI-compatible chat-completions endpoint.
@@ -28,7 +29,7 @@ FoodLens identifies a dish from a food photo, shows the model's top-3 prediction
 | -------- | ------------------------------------------------------------------------------------------------- |
 | Frontend | React 18, Vite 5, TypeScript, Tailwind CSS 3, React Router, TanStack Query, react-dropzone        |
 | Backend  | FastAPI, Pydantic v2, SQLAlchemy 2, Alembic, psycopg 3, Pillow, httpx                              |
-| ML       | transformers + PyTorch (CPU wheel), `nateraw/food` Food-101 classifier                            |
+| ML       | transformers + PyTorch (CPU wheel), `nateraw/food` Food-101, `mansourismatic/tunisian-food-classifier`, CLIP |
 | LLM      | Groq chat completions by default (OpenAI-compatible, configurable base URL)                       |
 | Database | PostgreSQL 16                                                                                     |
 | Runtime  | Docker Compose (`db`, `api`, `web`)                                                               |
@@ -51,9 +52,12 @@ FoodLens identifies a dish from a food photo, shows the model's top-3 prediction
   Pillow validation     Food-101 ViT          SQLAlchemy 2
   (JPEG/PNG, <=5MB)     (CPU, in-process)     + psycopg 3
                              |                     |
-                             | top-3 + score       v
-                             |               PostgreSQL 16
-                             v               (analyses table)
+                             v                     v
+                   Regional model + CLIP     PostgreSQL 16
+                   (couscous / mloukhiya)    (analyses table)
+                             |
+                             | merged top-3 + score
+                             v
                    confidence < 0.40 ?
                     /             \
                   yes              no
@@ -73,8 +77,8 @@ FoodLens identifies a dish from a food photo, shows the model's top-3 prediction
 Request flow:
 
 1. The browser posts a multipart image to `POST /api/analyze`.
-2. The API validates size and format, runs the classifier, and keeps the top 3 labels.
-3. If the top score is at least 0.40, it asks the LLM for a JSON recipe with 6-12 quantified ingredients and 4-8 steps.
+2. The API validates size and format, runs Food-101, and checks the regional classifier plus CLIP for couscous or mloukhiya.
+3. The merged top 3 labels are kept; if the top score is at least 0.40, the API asks the LLM for a JSON recipe with 6-12 quantified ingredients and 4-8 steps.
 4. The analysis row is saved in PostgreSQL; the image is saved under `backend/uploads`.
 5. The browser loads the result from `GET /api/history/{id}` and displays the image from `/uploads`.
 
@@ -238,6 +242,9 @@ The nginx image serves the SPA with `try_files` fallback, gzip, one-year immutab
 | ---------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
 | `DATABASE_URL`   | `postgresql+psycopg://foodlens:foodlens@db:5432/foodlens`   | SQLAlchemy URL used by the API and Alembic           |
 | `HF_MODEL_ID`    | `nateraw/food`                                              | Hugging Face Food-101 classifier                     |
+| `REGIONAL_ENABLED` | `true`                                                    | Enable couscous/mloukhiya recognition                |
+| `REGIONAL_MODEL_ID` | `mansourismatic/tunisian-food-classifier`               | Regional dish classifier checkpoint                  |
+| `CLIP_MODEL_ID`  | `openai/clip-vit-base-patch32`                              | CLIP model used to arbitrate regional predictions    |
 | `LLM_PROVIDER`   | `groq`                                                      | Provider name; `groq` and `openai` are built in      |
 | `LLM_API_KEY`    | empty                                                       | Required for recipe generation                       |
 | `LLM_MODEL`      | `openai/gpt-oss-120b`                                       | Model name sent to the LLM                           |
@@ -374,6 +381,7 @@ foodlens/
       db/repository.py            # create/get/list/delete
       db/session.py               # engine, SessionLocal, get_db
       ml/classifier.py            # Food-101 ViT wrapper
+      ml/regional.py              # regional classifier + CLIP arbitration
       ml/image_utils.py           # validation and size checks
       ml/recipe.py                # LLM client and recipe parsing
       schemas.py                  # Pydantic response models
@@ -409,13 +417,20 @@ the expected filenames and Wikimedia Commons credits.
 
 ## Known limitations
 
-- **Only 101 dish types.** The classifier is Food-101, so it can only return one of 101 labels. A non-food photo still gets the closest food label; the app mitigates this by treating scores below 40% as uncertain and skipping the recipe.
+- **Food-101 covers 101 dishes; regional support is narrower.** Couscous and mloukhiya are detected by a second classifier and CLIP arbitration. Other Arab and North African dishes still fall back to Food-101 labels and can be wrong. A non-food photo still gets the closest label; scores below 40% are treated as uncertain and skip the recipe.
+- **The regional model is demo-grade.** It was trained on student-collected CC-BY-4.0 data and is noisy; CLIP arbitration reduces confident Food-101 mistakes but does not make every regional photo correct. Disable it with `REGIONAL_ENABLED=false`.
 - **LLM recipes may be inaccurate.** Ingredients, quantities and cooking times are generated text, not verified culinary data. Always review them before cooking.
 - Single-user app: no authentication or accounts. `POST /api/analyze` has an in-memory, per-worker rate limit; it is not shared across replicas.
 - Uploaded images are stored on local disk. Deleting an analysis removes its image, but replacing the database without the uploads folder leaves orphaned files.
 - JPEG and PNG only, maximum 5 MB. Large high-resolution phone photos may need resizing.
-- CPU-only inference. The production image pre-downloads the model; other environments download it on first use.
+- CPU-only inference. The production image pre-downloads Food-101, the regional classifier and CLIP (roughly 600 MB extra); other environments download them on first use.
 - The LLM is required for confident predictions. Without `LLM_API_KEY` (or a reachable `LLM_BASE_URL`), analyses return `502 LLM_FAILURE`.
+
+## Model credits
+
+- `nateraw/food`: Food-101 image classifier used for the 101-class predictions.
+- `mansourismatic/tunisian-food-classifier` (CC-BY-4.0): regional classifier for couscous, mloukhiya and other Tunisian dishes. Its checkpoint is loaded with `weights_only=True`; see the model card for training data and caveats.
+- `openai/clip-vit-base-patch32`: zero-shot CLIP model used only to arbitrate regional predictions against Food-101.
 
 ## Demo
 

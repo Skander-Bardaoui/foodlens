@@ -78,3 +78,7 @@ def test_classify_scores_are_softmax_probabilities_in_descending_order(classifie
 
 def test_model_is_put_in_eval_mode(classifier):
     assert classifier.model.training is False
+
+
+def test_labels_are_cleaned_for_prompting(classifier):
+    assert classifier.labels == ["Pizza", "Sushi", "Hamburger", "Soup"]

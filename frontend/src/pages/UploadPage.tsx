@@ -312,7 +312,7 @@ export default function UploadPage() {
                   {!mutation.isPending && <ArrowRight className="h-4 w-4" />}
                 </Button>
                 <p className="text-center text-[11px] font-medium text-slate-500">
-                  Instant analysis with a Food-101 vision model
+                  Instant analysis with Food-101 + regional dishes
                 </p>
               </div>
             </div>

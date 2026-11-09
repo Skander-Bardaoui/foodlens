@@ -1,6 +1,7 @@
 import io
 import logging
 from collections.abc import Iterator
+from dataclasses import dataclass
 from uuid import UUID
 
 import pytest
@@ -40,6 +41,31 @@ class ExplodingClassifier:
         raise RuntimeError("sensitive classifier detail")
 
 
+@dataclass
+class FakeRegionalPrediction:
+    label: str
+    confidence: float
+    uncertain: bool
+    top3: list[Top3Item]
+
+
+class FakeRegionalRecognizer:
+    def __init__(self, prediction: FakeRegionalPrediction) -> None:
+        self.prediction = prediction
+
+    def recognize(
+        self, image: Image.Image, food101_top3: list[Top3Item]
+    ) -> FakeRegionalPrediction:
+        return self.prediction
+
+
+class ExplodingRegionalRecognizer:
+    def recognize(
+        self, image: Image.Image, food101_top3: list[Top3Item]
+    ) -> FakeRegionalPrediction:
+        raise RuntimeError("regional model unavailable")
+
+
 def image_bytes(fmt: str = "PNG") -> bytes:
     buffer = io.BytesIO()
     Image.new("RGB", (32, 32), (220, 70, 40)).save(buffer, format=fmt)
@@ -50,10 +76,14 @@ def image_bytes(fmt: str = "PNG") -> bytes:
 def client(tmp_path, monkeypatch, db_session) -> Iterator[TestClient]:
     monkeypatch.setattr(analyze_module.settings, "upload_dir", str(tmp_path))
     app.dependency_overrides[get_db] = lambda: db_session
+    for state_name in ("classifier", "regional"):
+        if hasattr(app.state, state_name):
+            delattr(app.state, state_name)
     yield TestClient(app)
     app.dependency_overrides.pop(get_db, None)
-    if hasattr(app.state, "classifier"):
-        del app.state.classifier
+    for state_name in ("classifier", "regional"):
+        if hasattr(app.state, state_name):
+            delattr(app.state, state_name)
 
 
 def post_image(client: TestClient, content: bytes = None, filename: str = "dish.png"):
@@ -103,6 +133,69 @@ def test_confident_analysis_returns_recipe_and_persists(
     assert record.label == "Pizza"
     assert record.top3[0]["label"] == "Pizza"
     assert record.top3[0]["score"] == pytest.approx(0.95)
+
+
+def test_regional_prediction_replaces_food101_label(
+    client, monkeypatch, db_session
+):
+    app.state.classifier = FakeClassifier(CONFIDENT_PREDICTIONS)
+    app.state.regional = FakeRegionalRecognizer(
+        FakeRegionalPrediction(
+            label="Couscous",
+            confidence=0.91,
+            uncertain=False,
+            top3=[
+                Top3Item(label="Couscous", score=0.91),
+                Top3Item(label="Lablabi", score=0.06),
+                Top3Item(label="Salade mechouia", score=0.03),
+            ],
+        )
+    )
+    seen_labels: list[str] = []
+
+    def fake_generate_recipe(label: str) -> RecipeOut:
+        seen_labels.append(label)
+        return RecipeOut(
+            ingredients=["500 g couscous", "2 carrots"],
+            steps=["Steam the couscous.", "Add the stew."],
+        )
+
+    monkeypatch.setattr(analyze_module, "generate_recipe", fake_generate_recipe)
+
+    response = post_image(client)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["label"] == "Couscous"
+    assert body["confidence"] == pytest.approx(0.91)
+    assert body["uncertain"] is False
+    assert [item["label"] for item in body["top3"]] == [
+        "Couscous",
+        "Lablabi",
+        "Salade mechouia",
+    ]
+    assert seen_labels == ["Couscous"]
+
+    record = db_session.get(Analysis, UUID(body["id"]))
+    assert record is not None
+    assert record.label == "Couscous"
+
+
+def test_regional_failure_falls_back_to_food101(client, monkeypatch, caplog):
+    app.state.classifier = FakeClassifier(CONFIDENT_PREDICTIONS)
+    app.state.regional = ExplodingRegionalRecognizer()
+
+    def fake_generate_recipe(label: str) -> RecipeOut:
+        return RecipeOut(ingredients=["dough"], steps=["Bake."])
+
+    monkeypatch.setattr(analyze_module, "generate_recipe", fake_generate_recipe)
+
+    with caplog.at_level(logging.ERROR):
+        response = post_image(client)
+
+    assert response.status_code == 200
+    assert response.json()["label"] == "Pizza"
+    assert "Regional recognition failed" in caplog.text
 
 
 def test_low_confidence_skips_the_llm(client, monkeypatch):

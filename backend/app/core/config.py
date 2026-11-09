@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://foodlens:foodlens@localhost:5432/foodlens"
 
     hf_model_id: str = "nateraw/food"
+    regional_enabled: bool = True
+    regional_model_id: str = "mansourismatic/tunisian-food-classifier"
+    clip_model_id: str = "openai/clip-vit-base-patch32"
 
     llm_provider: str = "groq"
     llm_api_key: SecretStr | None = None

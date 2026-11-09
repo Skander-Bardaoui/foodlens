@@ -247,7 +247,7 @@ function PredictionCard({ analysis }: { analysis: Analysis }) {
           Top 3 predictions
         </h2>
         <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-          Food-101 model
+          Food-101 + regional
         </span>
       </div>
 

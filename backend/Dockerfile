@@ -8,23 +8,29 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     HF_HUB_DISABLE_TELEMETRY=1
 
 ARG HF_MODEL_ID=nateraw/food
-ENV HF_MODEL_ID=${HF_MODEL_ID}
+ARG REGIONAL_MODEL_ID=mansourismatic/tunisian-food-classifier
+ARG CLIP_MODEL_ID=openai/clip-vit-base-patch32
+ENV HF_MODEL_ID=${HF_MODEL_ID} \
+    REGIONAL_MODEL_ID=${REGIONAL_MODEL_ID} \
+    CLIP_MODEL_ID=${CLIP_MODEL_ID}
 
 WORKDIR /app
 
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:${PATH}"
 
-# CPU-only torch wheel; the CPU index also carries its transitive deps.
+# CPU-only wheels; the CPU index also carries their transitive deps.
 RUN pip install --upgrade pip \
-    && pip install --index-url https://download.pytorch.org/whl/cpu torch
+    && pip install --index-url https://download.pytorch.org/whl/cpu \
+        torch==2.15.0 torchvision==0.29.2
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# Bake the classifier into the image so workers do not download it at runtime.
+# Bake the classifiers into the image so workers do not download them at runtime.
 RUN mkdir -p /cache/huggingface \
-    && python -c "import os; from transformers import AutoImageProcessor, AutoModelForImageClassification; model_id = os.environ['HF_MODEL_ID']; AutoImageProcessor.from_pretrained(model_id); AutoModelForImageClassification.from_pretrained(model_id)"
+    && python -c "import os; from transformers import AutoImageProcessor, AutoModelForImageClassification; model_id = os.environ['HF_MODEL_ID']; AutoImageProcessor.from_pretrained(model_id); AutoModelForImageClassification.from_pretrained(model_id)" \
+    && python -c "import os; from huggingface_hub import hf_hub_download; from transformers import CLIPModel, CLIPProcessor; hf_hub_download(repo_id=os.environ['REGIONAL_MODEL_ID'], filename='tunisian_food_mnv3.pt'); CLIPProcessor.from_pretrained(os.environ['CLIP_MODEL_ID']); CLIPModel.from_pretrained(os.environ['CLIP_MODEL_ID'])"
 
 
 FROM python:3.11-slim AS runtime
@@ -36,7 +42,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH="/opt/venv/bin:${PATH}"
 
 ARG HF_MODEL_ID=nateraw/food
-ENV HF_MODEL_ID=${HF_MODEL_ID}
+ARG REGIONAL_MODEL_ID=mansourismatic/tunisian-food-classifier
+ARG CLIP_MODEL_ID=openai/clip-vit-base-patch32
+ENV HF_MODEL_ID=${HF_MODEL_ID} \
+    REGIONAL_MODEL_ID=${REGIONAL_MODEL_ID} \
+    CLIP_MODEL_ID=${CLIP_MODEL_ID}
 
 RUN groupadd --system foodlens \
     && useradd --system --gid foodlens --create-home --home-dir /home/foodlens foodlens

@@ -21,6 +21,13 @@ class ImageClassifier:
         self.model.eval()
         logger.info("Loaded image classifier %s", self.model_id)
 
+    @property
+    def labels(self) -> list[str]:
+        return [
+            self._clean_label(label)
+            for label in self.model.config.id2label.values()
+        ]
+
     @torch.no_grad()
     def classify(self, image: Image.Image) -> list[Top3Item]:
         inputs = self.processor(images=image.convert("RGB"), return_tensors="pt")

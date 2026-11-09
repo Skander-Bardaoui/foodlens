@@ -53,6 +53,17 @@ async def lifespan(app: FastAPI):
     app.state.classifier = ImageClassifier()
     logger.info("Image classifier ready")
 
+    app.state.regional = None
+    if settings.regional_enabled:
+        try:
+            from app.ml.regional import RegionalRecognizer
+
+            app.state.regional = RegionalRecognizer(app.state.classifier.labels)
+        except Exception:
+            logger.exception(
+                "Regional dish recognizer failed to load; using Food-101 only"
+            )
+
     yield
 
     engine.dispose()
