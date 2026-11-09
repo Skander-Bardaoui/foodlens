@@ -26,6 +26,7 @@ function ApiDot() {
 
   return (
     <span
+      role="status"
       title={label}
       aria-label={label}
       className={cn(
@@ -58,7 +59,7 @@ export default function Navbar() {
               </span>
             </Link>
 
-            <nav className="hidden h-16 items-center gap-8 md:flex">
+            <nav aria-label="Main navigation" className="hidden h-16 items-center gap-8 md:flex">
               {desktopLinks.map((link) => (
                 <NavLink
                   key={link.to}
@@ -68,7 +69,7 @@ export default function Navbar() {
                     cn(
                       "flex h-full items-center pb-0.5 font-body text-label-lg transition-colors",
                       isRouteActive(link.to, isActive, pathname)
-                        ? "border-b-2 border-brand font-bold text-brand"
+                        ? "border-b-2 border-brand font-bold text-brand-deep"
                         : "text-muted hover:text-ink",
                     )
                   }
@@ -113,7 +114,7 @@ export default function Navbar() {
                 cn(
                   "flex flex-col items-center gap-1 py-2.5 font-body text-label-sm",
                   isRouteActive(link.to, isActive, pathname)
-                    ? "font-semibold text-brand"
+                    ? "font-semibold text-brand-deep"
                     : "text-muted-soft",
                 )
               }
@@ -142,7 +143,7 @@ export default function Navbar() {
                 cn(
                   "flex flex-col items-center gap-1 py-2.5 font-body text-label-sm",
                   isRouteActive(link.to, isActive, pathname)
-                    ? "font-semibold text-brand"
+                    ? "font-semibold text-brand-deep"
                     : "text-muted-soft",
                 )
               }

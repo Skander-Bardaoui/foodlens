@@ -22,7 +22,7 @@ export default function StepsList({ steps, tip, className }: StepsListProps) {
             {index + 1}
           </div>
           <div className="flex min-w-0 flex-col gap-1 pt-0.5">
-            <h3 className="font-display text-headline-sm font-bold text-ink transition-colors group-hover:text-brand">
+            <h3 className="font-display text-headline-sm font-bold text-ink transition-colors group-hover:text-brand-deep">
               {step.title}
             </h3>
             <p className="font-body text-body-md leading-relaxed text-muted">{step.description}</p>

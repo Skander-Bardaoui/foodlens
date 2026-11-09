@@ -26,6 +26,7 @@ class Settings(BaseSettings):
 
     max_upload_mb: int = 5
     upload_dir: str = "uploads"
+    analyze_rate_limit_per_minute: int = 10
 
     @property
     def cors_origin_list(self) -> list[str]:

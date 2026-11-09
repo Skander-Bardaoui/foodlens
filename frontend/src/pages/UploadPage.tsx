@@ -17,7 +17,7 @@ import {
   UtensilsCrossed,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { AnalyzeError, analyzeImage } from "../api/analyze";
@@ -27,6 +27,7 @@ import AnalyzingView from "../components/AnalyzingView";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import StepCard from "../components/StepCard";
+import { resolveAssetUrl } from "../lib/assets";
 import { cn } from "../lib/cn";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -63,6 +64,7 @@ export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [dropError, setDropError] = useState<string | null>(null);
+  const uploadHelpId = useId();
 
   useEffect(() => {
     if (!file) {
@@ -134,7 +136,7 @@ export default function UploadPage() {
         </span>
 
         <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-          Snap a dish. <span className="text-brand-500">Get the recipe.</span>
+          Snap a dish. <span className="text-brand-600">Get the recipe.</span>
         </h1>
 
         <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
@@ -178,7 +180,10 @@ export default function UploadPage() {
 
               <div
                 {...getRootProps({
+                  role: "button",
                   "aria-label": "Upload a food photo",
+                  "aria-describedby": uploadHelpId,
+                  "aria-invalid": dropError ? true : undefined,
                 })}
                 className={cn(
                   "my-auto flex cursor-pointer select-none flex-col items-center rounded-xl px-2 py-6 text-center transition-colors",
@@ -186,7 +191,7 @@ export default function UploadPage() {
                   isDragActive && "bg-brand-50/70",
                 )}
               >
-                <input {...getInputProps()} />
+                <input {...getInputProps({ "aria-label": "Food photo file" })} />
 
                 <span
                   className={cn(
@@ -202,7 +207,7 @@ export default function UploadPage() {
                     ? "Drop the photo to stage it"
                     : "Drop your food photo here or click to browse"}
                 </h2>
-                <p className="mb-6 max-w-sm text-sm text-slate-600">
+                <p id={uploadHelpId} className="mb-6 max-w-sm text-sm text-slate-600">
                   Supports high-resolution mobile snaps, overhead shots, and
                   plated portraits.
                 </p>
@@ -318,7 +323,7 @@ export default function UploadPage() {
       <section className="mx-auto w-full max-w-5xl">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wider text-brand-600">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-brand-700">
               Culinary Intelligence Flow
             </p>
             <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -374,7 +379,7 @@ export default function UploadPage() {
           </div>
           <Link
             to="/history"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 transition-colors hover:text-brand-700"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 transition-colors hover:text-brand-deep"
           >
             View all
             <ArrowRight className="h-4 w-4" />
@@ -408,8 +413,8 @@ export default function UploadPage() {
               >
                 <div className="relative aspect-[16/9] bg-slate-100">
                   <img
-                    src={analysis.image_url}
-                    alt={analysis.label}
+                    src={resolveAssetUrl(analysis.image_url)}
+                    alt={`${analysis.label} dish`}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[10px] font-bold text-slate-700 shadow-sm">

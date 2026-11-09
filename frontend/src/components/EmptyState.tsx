@@ -68,7 +68,7 @@ export default function EmptyState({
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               {tips.map((tip, index) => (
                 <div key={tip.title} className="flex items-start gap-2.5">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-pill bg-surface-lowest font-body text-label-sm font-bold text-brand shadow-sm">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-pill bg-surface-lowest font-body text-label-sm font-bold text-brand-deep shadow-sm">
                     {index + 1}
                   </span>
                   <p className="font-body text-body-sm text-muted">

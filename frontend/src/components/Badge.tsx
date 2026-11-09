@@ -8,7 +8,7 @@ export type BadgeTone = "neutral" | "brand" | "success" | "warning" | "danger";
 const toneClasses: Record<BadgeTone, string> = {
   neutral: "bg-surface-container text-ink",
   brand: "bg-brand-soft text-brand-deep",
-  success: "bg-accent-tint text-accent",
+  success: "bg-accent-tint text-accent-deep",
   warning: "bg-warning-tint text-warning-deep",
   danger: "bg-danger-soft text-danger-deep",
 };
@@ -30,6 +30,7 @@ export default function Badge({
 }: BadgeProps) {
   return (
     <span
+      data-tone={tone}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 font-body text-label-sm font-semibold",
         uppercase && "uppercase tracking-wide",

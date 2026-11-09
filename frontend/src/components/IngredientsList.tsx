@@ -58,7 +58,7 @@ export default function IngredientsList({
           </p>
         </div>
         <span className="inline-flex items-center gap-1 rounded-pill bg-surface-low px-3 py-1">
-          <span className="font-body text-label-sm font-bold text-brand">
+          <span className="font-body text-label-sm font-bold text-brand-deep">
             {checked.size} / {ingredients.length}
           </span>
           <span className="font-body text-label-sm font-medium text-muted">in pantry</span>

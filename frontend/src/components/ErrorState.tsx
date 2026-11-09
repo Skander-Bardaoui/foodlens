@@ -58,7 +58,7 @@ export default function ErrorState({
 
         {details?.length ? (
           <details className="mt-6 w-full text-left">
-            <summary className="flex cursor-pointer select-none items-center justify-between rounded-control bg-surface-low px-4 py-3 font-body text-label-md text-ink transition-colors hover:text-brand">
+            <summary className="flex cursor-pointer select-none items-center justify-between rounded-control bg-surface-low px-4 py-3 font-body text-label-md text-ink transition-colors hover:text-brand-deep">
               <span className="flex items-center gap-2">
                 <Terminal className="h-4 w-4" />
                 Diagnostic logs &amp; error code

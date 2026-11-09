@@ -5,7 +5,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.core.middleware import analyze_rate_limiter
 from app.db.models import Base
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter() -> Iterator[None]:
+    analyze_rate_limiter.reset()
+    yield
+    analyze_rate_limiter.reset()
 
 
 @pytest.fixture

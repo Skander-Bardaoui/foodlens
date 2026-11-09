@@ -1,4 +1,5 @@
 import io
+import logging
 from collections.abc import Iterator
 from uuid import UUID
 
@@ -32,6 +33,11 @@ class FakeClassifier:
 
     def classify(self, image: Image.Image) -> list[Top3Item]:
         return self.predictions
+
+
+class ExplodingClassifier:
+    def classify(self, image: Image.Image) -> list[Top3Item]:
+        raise RuntimeError("sensitive classifier detail")
 
 
 def image_bytes(fmt: str = "PNG") -> bytes:
@@ -160,3 +166,54 @@ def test_llm_failure_returns_502_error_payload(client, tmp_path, monkeypatch):
         }
     }
     assert list(tmp_path.iterdir()) == []
+
+
+def test_unexpected_error_is_logged_and_hidden(client, caplog):
+    app.state.classifier = ExplodingClassifier()
+
+    with caplog.at_level(logging.ERROR):
+        response = post_image(client)
+
+    assert response.status_code == 500
+    assert response.json() == {
+        "error": {
+            "code": "INTERNAL_ERROR",
+            "message": "Internal server error",
+        }
+    }
+    assert response.headers["x-request-id"]
+    assert "sensitive classifier detail" not in response.text
+
+    failure = next(record for record in caplog.records if record.exc_info)
+    assert failure.request_id == response.headers["x-request-id"]
+    assert "sensitive classifier detail" in str(failure.exc_info[1])
+
+
+def test_request_body_limit_returns_413(client, monkeypatch):
+    monkeypatch.setattr(analyze_module.settings, "max_upload_mb", 0)
+
+    response = post_image(client, content=b"x" * (100 * 1024))
+
+    assert response.status_code == 413
+    assert response.json()["error"]["code"] == "FILE_TOO_LARGE"
+    assert response.headers["x-request-id"]
+
+
+def test_analyze_rate_limit_returns_429(client, monkeypatch):
+    monkeypatch.setattr(analyze_module.settings, "analyze_rate_limit_per_minute", 2)
+
+    first = post_image(client, content=b"not an image")
+    second = post_image(client, content=b"not an image")
+    limited = post_image(client, content=b"not an image")
+
+    assert first.status_code == 400
+    assert second.status_code == 400
+    assert limited.status_code == 429
+    assert limited.json() == {
+        "error": {
+            "code": "RATE_LIMITED",
+            "message": "Too many analysis requests. Please try again later.",
+        }
+    }
+    assert int(limited.headers["retry-after"]) >= 1
+    assert limited.headers["x-ratelimit-limit"] == "2"

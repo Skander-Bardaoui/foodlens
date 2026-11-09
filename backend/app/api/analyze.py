@@ -34,6 +34,7 @@ router = APIRouter(prefix="/api")
     responses={
         400: {"model": ErrorResponse, "description": "The upload is not a valid image"},
         413: {"model": ErrorResponse, "description": "The upload exceeds MAX_UPLOAD_MB"},
+        429: {"model": ErrorResponse, "description": "Analyze rate limit exceeded"},
         502: {"model": ErrorResponse, "description": "Recipe generation failed"},
     },
 )

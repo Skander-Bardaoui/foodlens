@@ -3,6 +3,7 @@ import { AlertTriangle, CalendarDays, Trash2, UtensilsCrossed } from "lucide-rea
 import { useNavigate } from "react-router-dom";
 
 import type { Analysis } from "../api/types";
+import { resolveAssetUrl } from "../lib/assets";
 import Badge, { ConfidenceBadge } from "./Badge";
 import Card from "./Card";
 import IconButton from "./IconButton";
@@ -47,7 +48,7 @@ export default function HistoryCard({ analysis, onDelete }: HistoryCardProps) {
           </div>
         ) : (
           <img
-            src={analysis.image_url}
+            src={resolveAssetUrl(analysis.image_url)}
             alt={`${analysis.label} dish`}
             loading="lazy"
             onError={() => setImageFailed(true)}

@@ -1,4 +1,5 @@
 import { AlertCircle, Camera, ImageIcon, X } from "lucide-react";
+import { useId } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { cn } from "../lib/cn";
@@ -26,6 +27,7 @@ export default function DropZone({
   maxSizeMb = 5,
   className,
 }: DropZoneProps) {
+  const helpId = useId();
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDropAccepted: (files) => onFiles?.(files),
     accept: {
@@ -69,7 +71,12 @@ export default function DropZone({
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <div
-        {...getRootProps()}
+        {...getRootProps({
+          role: "button",
+          "aria-label": "Upload a food photo",
+          "aria-describedby": helpId,
+          "aria-invalid": error ? true : undefined,
+        })}
         className={cn(
           "group relative flex min-h-[19rem] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-panel border-2 border-dashed px-6 py-12 text-center transition-all duration-200",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30",
@@ -80,7 +87,7 @@ export default function DropZone({
               : "border-faint bg-surface-lowest hover:border-brand hover:bg-brand-tint/60",
         )}
       >
-        <input {...getInputProps()} />
+        <input {...getInputProps({ "aria-label": "Food photo file" })} />
 
         <span className={cn(corner, "left-3 top-3 rounded-tl-md border-l-2 border-t-2")} />
         <span className={cn(corner, "right-3 top-3 rounded-tr-md border-r-2 border-t-2")} />
@@ -103,7 +110,11 @@ export default function DropZone({
               ? "Drop it in the pan"
               : "Drop your dish photo here"}
         </h3>
-        <p className="mt-1 max-w-sm font-body text-body-sm text-muted">
+        <p
+          id={helpId}
+          role={error ? "alert" : undefined}
+          className="mt-1 max-w-sm font-body text-body-sm text-muted"
+        >
           {error ??
             "or click to browse — JPG, PNG or WEBP, up to " + `${maxSizeMb} MB.`}
         </p>

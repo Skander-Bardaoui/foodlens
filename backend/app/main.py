@@ -12,6 +12,12 @@ from app.api.analyze import router as analyze_router
 from app.api.history import router as history_router
 from app.core.config import settings
 from app.core.errors import register_exception_handlers
+from app.core.logging import configure_logging
+from app.core.middleware import (
+    AnalyzeRateLimitMiddleware,
+    RequestBodyLimitMiddleware,
+    RequestContextMiddleware,
+)
 from app.db.session import engine
 from app.ml.classifier import ImageClassifier
 from app.schemas import HealthResponse
@@ -24,10 +30,7 @@ DB_CONNECT_DELAY_SECONDS = 2
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(levelname)s [%(name)s] %(message)s",
-    )
+    configure_logging()
     for attempt in range(1, DB_CONNECT_ATTEMPTS + 1):
         try:
             with engine.connect() as connection:
@@ -57,12 +60,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="FoodLens API", version="0.1.0", lifespan=lifespan)
 
+app.add_middleware(RequestBodyLimitMiddleware)
+app.add_middleware(AnalyzeRateLimitMiddleware)
+app.add_middleware(RequestContextMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Request-ID"],
 )
 
 Path(settings.upload_dir).mkdir(parents=True, exist_ok=True)

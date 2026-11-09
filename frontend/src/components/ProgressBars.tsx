@@ -6,8 +6,8 @@ export type Prediction = {
 };
 
 const barStyles = [
-  { dot: "bg-accent", bar: "bg-accent", text: "text-accent" },
-  { dot: "bg-brand-soft", bar: "bg-brand-soft", text: "text-brand" },
+  { dot: "bg-accent", bar: "bg-accent", text: "text-accent-deep" },
+  { dot: "bg-brand-soft", bar: "bg-brand-soft", text: "text-brand-700" },
   { dot: "bg-surface-highest", bar: "bg-surface-highest", text: "text-muted" },
 ];
 

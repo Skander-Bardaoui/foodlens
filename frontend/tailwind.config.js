@@ -67,7 +67,7 @@ export default {
         muted: {
           DEFAULT: "#584237",
           slate: "#4b5563",
-          soft: "#8c7164",
+          soft: "#756055",
         },
         outline: {
           DEFAULT: "#8c7164",

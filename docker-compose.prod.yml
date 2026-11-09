@@ -1,0 +1,62 @@
+name: foodlens-prod
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-foodlens}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-foodlens}
+      POSTGRES_DB: ${POSTGRES_DB:-foodlens}
+    volumes:
+      - foodlens_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  api:
+    build:
+      context: ./backend
+      args:
+        HF_MODEL_ID: ${HF_MODEL_ID:-nateraw/food}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://foodlens:foodlens@db:5432/foodlens}
+      HF_MODEL_ID: ${HF_MODEL_ID:-nateraw/food}
+      LLM_PROVIDER: ${LLM_PROVIDER:-groq}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-openai/gpt-oss-120b}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-5}
+      ANALYZE_RATE_LIMIT_PER_MINUTE: ${ANALYZE_RATE_LIMIT_PER_MINUTE:-10}
+      UPLOAD_DIR: /app/uploads
+      PORT: 8000
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-1}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - foodlens_uploads:/app/uploads
+      - foodlens_hf_cache:/cache/huggingface
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api}
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-8080}:80"
+
+volumes:
+  foodlens_pgdata:
+  foodlens_uploads:
+  foodlens_hf_cache:

@@ -8,7 +8,7 @@ export type ToastTone = "success" | "warning" | "danger" | "info";
 const toneStyles: Record<ToastTone, { wrap: string; icon: string; Icon: typeof Info }> = {
   success: {
     wrap: "border-accent/30 bg-surface-lowest",
-    icon: "bg-accent-tint text-accent",
+    icon: "bg-accent-tint text-accent-deep",
     Icon: CheckCircle2,
   },
   warning: {

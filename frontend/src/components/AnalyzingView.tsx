@@ -115,7 +115,7 @@ export default function AnalyzingView({
                 <Sparkles className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-600">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-700">
                   Culinary Pipeline
                 </p>
                 <h2 className="text-lg font-bold tracking-tight text-slate-900">
@@ -187,7 +187,7 @@ export default function AnalyzingView({
                         className={cn(
                           "shrink-0 text-[10px] font-bold uppercase tracking-wider",
                           state === "done" && "text-emerald-600",
-                          state === "active" && "text-brand-600",
+                          state === "active" && "text-brand-700",
                           state === "queued" && "text-slate-400",
                         )}
                       >
