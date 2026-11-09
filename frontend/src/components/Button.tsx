@@ -61,7 +61,7 @@ export default function Button({
       {...rest}
     >
       {loading ? <LoaderCircle className="h-[1.15em] w-[1.15em] animate-spin" /> : leftIcon}
-      <span>{children}</span>
+      {children}
       {!loading && rightIcon}
     </button>
   );

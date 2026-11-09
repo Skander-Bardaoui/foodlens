@@ -1,4 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useDropzone } from "react-dropzone";
 import type { FileRejection } from "react-dropzone";
 import {
@@ -14,14 +18,15 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { AnalyzeError, analyzeImage } from "../api/analyze";
+import { getHistory } from "../api/history";
 import type { Analysis } from "../api/types";
 import AnalyzingView from "../components/AnalyzingView";
-import Button from "../components/ui/Button";
-import Card from "../components/ui/Card";
-import StepCard from "../components/ui/StepCard";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import StepCard from "../components/StepCard";
 import { cn } from "../lib/cn";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -54,6 +59,7 @@ function rejectionMessage(rejection: FileRejection) {
 
 export default function UploadPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [dropError, setDropError] = useState<string | null>(null);
@@ -72,9 +78,17 @@ export default function UploadPage() {
   const mutation = useMutation<Analysis, AnalyzeError, File>({
     mutationFn: analyzeImage,
     onSuccess: (analysis) => {
+      void queryClient.invalidateQueries({ queryKey: ["history"] });
       navigate(`/result/${analysis.id}`, { state: { analysis } });
     },
   });
+
+  const recentQuery = useQuery({
+    queryKey: ["history", "recent"],
+    queryFn: () => getHistory({ limit: 3 }),
+    staleTime: 60_000,
+  });
+  const recentItems = recentQuery.data?.items ?? [];
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -154,7 +168,7 @@ export default function UploadPage() {
       ) : (
         <>
           <section aria-label="Analyze a dish" className="mx-auto w-full max-w-5xl">
-        <Card className="p-3 sm:p-4">
+        <Card padding="none" className="p-3 sm:p-4">
           <div className="grid items-stretch gap-4 lg:grid-cols-12 lg:gap-6">
             <div className="relative flex min-h-[24rem] flex-col justify-between overflow-hidden rounded-2xl bg-slate-50 p-6 sm:p-8 lg:col-span-7">
               <span className="pointer-events-none absolute left-4 top-4 h-6 w-6 rounded-tl border-l-2 border-t-2 border-brand-300/60" />
@@ -319,36 +333,35 @@ export default function UploadPage() {
 
         <div className="grid gap-6 md:grid-cols-3">
           <StepCard
-            number="01"
+            step={1}
             title="Upload Photo"
             description="Take a picture or drop any dish image from your computer or camera roll. Lighting is handled automatically."
             icon={Camera}
-            accent="orange"
+            accent="brand"
             footerIcon={Crop}
             footerText="Automatic framing & crop"
           />
           <StepCard
-            number="02"
+            step={2}
             title="AI Recognizes Dish"
             description="Our vision model spots visual cues, garnishes, sauces, and core ingredients within seconds."
             icon={ScanSearch}
-            accent="amber"
+            accent="warning"
             footerIcon={Gauge}
             footerText="Ingredient-level confidence"
           />
           <StepCard
-            number="03"
+            step={3}
             title="Get Full Recipe"
             description="Receive ingredients and step-by-step instructions, ready to follow at the stove."
             icon={UtensilsCrossed}
-            accent="green"
+            accent="accent"
             footerIcon={ListChecks}
             footerText="Step-by-step cooking"
           />
         </div>
       </section>
 
-      {/* TODO: the history developer replaces this slot with the Recent analyses strip. */}
       <section aria-label="Recent analyses" className="mx-auto w-full max-w-5xl">
         <div className="mb-4 flex items-end justify-between gap-4">
           <div>
@@ -359,13 +372,65 @@ export default function UploadPage() {
               Recent Analyses
             </h2>
           </div>
+          <Link
+            to="/history"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 transition-colors hover:text-brand-700"
+          >
+            View all
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
-        <div
-          data-testid="recent-analyses-slot"
-          className="flex min-h-32 items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-white/60 px-4 text-center text-sm text-slate-500"
-        >
-          Recent analyses will appear here.
-        </div>
+
+        {recentQuery.isPending ? (
+          <div className="grid gap-4 sm:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="h-32 animate-pulse rounded-2xl border border-slate-200 bg-slate-100"
+              />
+            ))}
+          </div>
+        ) : recentQuery.isError ? (
+          <div className="flex min-h-32 items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white/60 px-4 text-center text-sm text-slate-500">
+            Recent analyses are unavailable right now.
+          </div>
+        ) : recentItems.length === 0 ? (
+          <div className="flex min-h-32 items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-white/60 px-4 text-center text-sm text-slate-500">
+            Your first analysis will appear here.
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-3">
+            {recentItems.map((analysis) => (
+              <Link
+                key={analysis.id}
+                to={`/result/${analysis.id}`}
+                className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <div className="relative aspect-[16/9] bg-slate-100">
+                  <img
+                    src={analysis.image_url}
+                    alt={analysis.label}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[10px] font-bold text-slate-700 shadow-sm">
+                    {Math.round(analysis.confidence * 100)}% match
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2 p-3">
+                  <span className="truncate text-sm font-semibold text-slate-900">
+                    {analysis.label}
+                  </span>
+                  <span className="shrink-0 text-[11px] font-medium text-slate-500">
+                    {new Date(analysis.created_at).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
         </>
       )}

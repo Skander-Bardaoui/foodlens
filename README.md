@@ -229,7 +229,6 @@ foodlens/
       pages/StyleguidePage.tsx
       components/                 # shared design-system components
       components/AnalyzingView.tsx
-      components/ui/              # adapters for the upload/result pages
 ```
 
 Optional demo data: `docker compose exec api python -m scripts.seed_history --reset`

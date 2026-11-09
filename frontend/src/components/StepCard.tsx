@@ -16,6 +16,8 @@ type StepCardProps = {
   description: string;
   icon: LucideIcon;
   accent?: StepCardAccent;
+  footerIcon?: LucideIcon;
+  footerText?: string;
   className?: string;
 };
 
@@ -25,6 +27,8 @@ export default function StepCard({
   description,
   icon: Icon,
   accent = "brand",
+  footerIcon: FooterIcon,
+  footerText,
   className,
 }: StepCardProps) {
   const styles = accentClasses[accent];
@@ -56,6 +60,12 @@ export default function StepCard({
         </p>
         <h3 className="mt-1 font-display text-headline-sm font-bold text-ink">{title}</h3>
         <p className="mt-2 font-body text-body-sm leading-relaxed text-muted">{description}</p>
+        {FooterIcon && footerText ? (
+          <p className="mt-5 flex items-center gap-2 border-t border-hairline/70 pt-4 font-body text-label-sm text-muted">
+            <FooterIcon className="h-4 w-4" />
+            {footerText}
+          </p>
+        ) : null}
       </div>
     </div>
   );

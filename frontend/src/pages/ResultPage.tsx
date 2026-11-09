@@ -19,8 +19,8 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { deleteAnalysis, getAnalysis } from "../api/history";
 import { ApiErrorException } from "../api/http";
 import type { Analysis } from "../api/types";
-import Button from "../components/ui/Button";
-import Card from "../components/ui/Card";
+import Button from "../components/Button";
+import Card from "../components/Card";
 import { cn } from "../lib/cn";
 
 type ResultLocationState = { analysis?: Analysis } | null;
@@ -208,7 +208,7 @@ function PhotoCard({ analysis }: { analysis: Analysis }) {
   const confidence = Math.round(analysis.confidence * 100);
 
   return (
-    <Card className="overflow-hidden">
+    <Card padding="none" className="overflow-hidden">
       <div className="relative aspect-[4/3] bg-slate-100">
         <img
           src={analysis.image_url}
@@ -251,7 +251,7 @@ function PhotoCard({ analysis }: { analysis: Analysis }) {
 
 function PredictionCard({ analysis }: { analysis: Analysis }) {
   return (
-    <Card className="p-5">
+    <Card padding="none" className="p-5">
       <div className="flex items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 text-sm font-bold text-slate-900">
           <ScanSearch className="h-4 w-4 text-brand-500" />
@@ -304,7 +304,7 @@ type IngredientsCardProps = {
 
 function IngredientsCard({ analysis, checked, onToggle }: IngredientsCardProps) {
   return (
-    <Card className="p-5 sm:p-6">
+    <Card padding="none" className="p-5 sm:p-6">
       <div className="flex items-center justify-between gap-3">
         <h2 className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-slate-900">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
@@ -360,7 +360,7 @@ function IngredientsCard({ analysis, checked, onToggle }: IngredientsCardProps) 
 
 function StepsCard({ steps }: { steps: string[] }) {
   return (
-    <Card className="p-5 sm:p-6">
+    <Card padding="none" className="p-5 sm:p-6">
       <h2 className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-slate-900">
         <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
           <UtensilsCrossed className="h-5 w-5" />
@@ -447,7 +447,10 @@ function UncertainRecipePlaceholder({
   onTryAnother: () => void;
 }) {
   return (
-    <Card className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
+    <Card
+      padding="none"
+      className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center"
+    >
       <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
         <UtensilsCrossed className="h-7 w-7" />
       </span>

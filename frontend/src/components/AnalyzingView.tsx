@@ -9,8 +9,8 @@ import {
 import { useEffect, useState } from "react";
 
 import { cn } from "../lib/cn";
-import Button from "./ui/Button";
-import Card from "./ui/Card";
+import Button from "./Button";
+import Card from "./Card";
 
 type AnalyzingViewProps = {
   previewUrl: string | null;
@@ -52,7 +52,7 @@ export default function AnalyzingView({
   }, []);
 
   return (
-    <Card className="p-3 sm:p-4" data-testid="analyzing-state">
+    <Card padding="none" className="p-3 sm:p-4" data-testid="analyzing-state">
       <div className="grid gap-4 lg:grid-cols-12 lg:gap-6">
         <div className="flex flex-col gap-4 lg:col-span-6">
           <div className="flex items-center justify-between gap-3">
