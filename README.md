@@ -403,7 +403,9 @@ foodlens/
 ```
 
 Optional demo data: `docker compose exec api python -m scripts.seed_history --reset`
- inserts 12 analyses and their images so the History page is populated.
+ inserts 12 analyses and their images so the History page is populated. Without
+`backend/uploads/source_photos/`, the script draws labeled placeholders and prints
+the expected filenames and Wikimedia Commons credits.
 
 ## Known limitations
 
