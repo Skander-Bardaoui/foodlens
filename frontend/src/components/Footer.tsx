@@ -1,6 +1,16 @@
+function resolveDocsHref(): string {
+  const base = import.meta.env.VITE_API_URL || "/api";
+  if (!/^https?:\/\//i.test(base)) return "/docs";
+  try {
+    return `${new URL(base).origin}/docs`;
+  } catch {
+    return "/docs";
+  }
+}
+
 const footerLinks = [
   { label: "Privacy", href: "#" },
-  { label: "API Docs", href: "/api/docs" },
+  { label: "API Docs", href: resolveDocsHref() },
   { label: "Feedback", href: "#" },
 ];
 

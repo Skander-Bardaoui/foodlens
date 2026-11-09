@@ -1,6 +1,6 @@
 import type { ApiError } from "./types";
 
-const BASE_URL = (import.meta.env.VITE_API_URL ?? "/api").replace(/\/$/, "");
+const BASE_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
 
 export class ApiErrorException extends Error implements ApiError {
   readonly code: string;
