@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+from app.api.analyze import router as analyze_router
+from app.api.history import router as history_router
 from app.api.routes import router as api_router
 from app.core.config import settings
 from app.db.session import engine
@@ -57,6 +59,8 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api")
+app.include_router(analyze_router, prefix="/api")
+app.include_router(history_router, prefix="/api")
 
 
 @app.get("/api/health", response_model=HealthResponse, tags=["health"])
