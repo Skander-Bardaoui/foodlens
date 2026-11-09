@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Camera,
   Check,
@@ -30,6 +30,7 @@ export default function ResultPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const initialAnalysis = (location.state as ResultLocationState)?.analysis;
 
   const analysisQuery = useQuery<Analysis, ApiErrorException>({
@@ -50,6 +51,8 @@ export default function ResultPage() {
   const deleteMutation = useMutation<void, ApiErrorException, void>({
     mutationFn: () => deleteAnalysis(id as string),
     onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ["analysis", id] });
+      void queryClient.invalidateQueries({ queryKey: ["history"] });
       setConfirmOpen(false);
       navigate("/", { replace: true });
     },

@@ -87,7 +87,7 @@ export default function UploadPage() {
 
   const recentQuery = useQuery({
     queryKey: ["history", "recent"],
-    queryFn: () => getHistory({ limit: 3 }),
+    queryFn: () => getHistory({ limit: 4 }),
     staleTime: 60_000,
   });
   const recentItems = recentQuery.data?.items ?? [];
@@ -387,8 +387,8 @@ export default function UploadPage() {
         </div>
 
         {recentQuery.isPending ? (
-          <div className="grid gap-4 sm:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, index) => (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
                 className="h-32 animate-pulse rounded-2xl border border-slate-200 bg-slate-100"
@@ -404,7 +404,7 @@ export default function UploadPage() {
             Your first analysis will appear here.
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {recentItems.map((analysis) => (
               <Link
                 key={analysis.id}
