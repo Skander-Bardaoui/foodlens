@@ -98,7 +98,7 @@ Open `.env` and set one of:
 
 ```dotenv
 # Groq (default)
-LLM_API_KEY=gsk_...
+LLM_API_KEY=<your-groq-api-key>
 
 # or any OpenAI-compatible endpoint
 LLM_BASE_URL=http://host.docker.internal:11434/v1
