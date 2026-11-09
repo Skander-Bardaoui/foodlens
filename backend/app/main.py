@@ -1,13 +1,17 @@
 import asyncio
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
-from app.api.routes import router as api_router
+from app.api.analyze import router as analyze_router
+from app.api.history import router as history_router
 from app.core.config import settings
+from app.core.errors import register_exception_handlers
 from app.db.session import engine
 from app.schemas import HealthResponse
 
@@ -56,7 +60,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(api_router, prefix="/api")
+Path(settings.upload_dir).mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=settings.upload_dir), name="uploads")
+
+app.include_router(analyze_router)
+app.include_router(history_router)
+
+register_exception_handlers(app)
 
 
 @app.get("/api/health", response_model=HealthResponse, tags=["health"])

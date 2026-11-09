@@ -21,7 +21,7 @@ foodlens/
   .env.example
   .gitignore
   README.md
-  design/                     # Stitch exports go here
+  design/                     # Stitch design exports
   backend/
     Dockerfile
     requirements.txt
@@ -30,12 +30,16 @@ foodlens/
     app/
       main.py                 # FastAPI app, CORS, lifespan DB check, GET /api/health
       core/config.py          # Settings read from environment variables
-      api/routes.py           # empty router, included under /api
+      core/errors.py          # AppError, error codes, JSON exception handlers
+      api/analyze.py          # router stub (owned by Person 1)
+      api/history.py          # router stub (owned by Person 2)
       db/session.py           # engine, SessionLocal, get_db
-      db/models.py            # Declarative Base (no tables yet)
+      db/models.py            # Analysis model (analyses table)
+      db/repository.py        # create/get/list/delete + to_out converter
       ml/                     # empty package for the classifier
-      schemas.py
-    tests/test_health.py
+      schemas.py              # shared API contract (Pydantic v2)
+    scripts/seed_history.py   # 12 demo analyses with generated images
+    tests/                    # pytest suite (unit + TestClient integration)
     uploads/                  # saved images (gitignored)
   frontend/
     Dockerfile
@@ -47,7 +51,11 @@ foodlens/
       App.tsx                 # routes: Upload, Result, History
       pages/
       components/
-      api/client.ts
+      api/client.ts           # health check used by the header badge
+      api/http.ts             # fetch wrapper (base URL, typed ApiError)
+      api/types.ts            # shared API contract (mirrors schemas.py)
+      api/analyze.ts          # stub (owned by Person 1)
+      api/history.ts          # stub (owned by Person 2)
       lib/
 ```
 
@@ -84,7 +92,10 @@ docker compose up -d --build
 docker compose exec api alembic upgrade head
 docker compose exec api alembic revision --autogenerate -m "your message"
 
-# Backend tests
+# Seed 12 demo analyses with placeholder images (--reset clears seeded rows first)
+docker compose exec api python -m scripts.seed_history --reset
+
+# Backend tests (uses the auto-created "<POSTGRES_DB>_test" database)
 docker compose exec api pytest
 
 # Shells
@@ -145,4 +156,7 @@ No secret is hardcoded; `LLM_API_KEY` is optional and stored as a `SecretStr`.
 - PostgreSQL has no host port mapping; use `docker compose exec db psql ...` or add a
   `ports` entry if you need external access (it may conflict with a local server on 5432).
 - Uploaded images live in `backend/uploads` (bind-mounted and gitignored).
-- `design/` is empty; drop the Stitch exports there.
+- Tests run against a separate `<POSTGRES_DB>_test` database (created automatically if
+  missing) and roll back every test in a savepoint, so development data is never
+  touched. Override the target with `TEST_DATABASE_URL` if needed.
+- `design/` holds the Stitch exports (`stitch_foodlens_ai_recipe_generator/`).

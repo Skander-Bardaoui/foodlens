@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
+const API_BASE = import.meta.env.VITE_API_URL ?? "/api";
+const MOCK_MODE = import.meta.env.VITE_USE_MOCK === "true";
 
 export type HealthResponse = {
   status: string;
@@ -15,5 +16,8 @@ export async function apiGet<T>(path: string): Promise<T> {
 }
 
 export function fetchHealth(): Promise<HealthResponse> {
+  if (MOCK_MODE) {
+    return Promise.resolve({ status: "ok" });
+  }
   return apiGet<HealthResponse>("/health");
 }

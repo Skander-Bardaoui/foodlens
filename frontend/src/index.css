@@ -3,7 +3,22 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply min-h-screen bg-surface font-body text-body-md text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+  }
+
+  ::selection {
+    @apply bg-brand-soft text-brand-deep;
   }
 }

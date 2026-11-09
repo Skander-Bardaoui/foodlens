@@ -1,18 +1,22 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
-import Layout from "./components/Layout";
+import MainLayout from "./layouts/MainLayout";
 import HistoryPage from "./pages/HistoryPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import ResultPage from "./pages/ResultPage";
+import StyleguidePage from "./pages/StyleguidePage";
 import UploadPage from "./pages/UploadPage";
 
 export default function App() {
   return (
     <Routes>
-      <Route element={<Layout />}>
+      <Route element={<MainLayout />}>
         <Route index element={<UploadPage />} />
         <Route path="result" element={<ResultPage />} />
+        <Route path="result/:id" element={<ResultPage />} />
         <Route path="history" element={<HistoryPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="styleguide" element={<StyleguidePage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

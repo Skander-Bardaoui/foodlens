@@ -11,9 +11,9 @@ export default function ResultPage() {
       description="Predicted dish, confidence score and optional nutrition insights will show up here."
     >
       <div className="mx-auto flex max-w-sm flex-col items-center gap-2">
-        <Sparkles className="h-10 w-10 text-slate-400" />
-        <p className="text-sm font-medium text-slate-700">No scan selected yet</p>
-        <p className="text-xs text-slate-500">
+        <Sparkles className="h-10 w-10 text-brand" />
+        <p className="font-body text-label-lg text-ink">No scan selected yet</p>
+        <p className="font-body text-label-md text-muted">
           Results will appear after an image is uploaded.
         </p>
       </div>

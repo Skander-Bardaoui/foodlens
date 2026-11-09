@@ -11,9 +11,9 @@ export default function UploadPage() {
       description="Drop a photo of your dish and FoodLens will identify it with a Food-101 image classifier."
     >
       <div className="mx-auto flex max-w-sm flex-col items-center gap-2">
-        <ImageUp className="h-10 w-10 text-slate-400" />
-        <p className="text-sm font-medium text-slate-700">Image dropzone coming soon</p>
-        <p className="text-xs text-slate-500">
+        <ImageUp className="h-10 w-10 text-brand" />
+        <p className="font-body text-label-lg text-ink">Image dropzone coming soon</p>
+        <p className="font-body text-label-md text-muted">
           Upload handling will be wired to POST /api in the next step.
         </p>
       </div>
