@@ -1,148 +1,240 @@
 # FoodLens
 
-FoodLens identifies dishes from photos. This repository is the **environment scaffold**:
-all three services boot and talk to each other, with the business logic still to come.
+FoodLens identifies a dish from a food photo, shows the model's top-3 predictions, and generates a cooking recipe with an LLM. Confident predictions get a full recipe; ambiguous photos get a friendly "we're not sure" screen instead of a hallucinated recipe.
+
+## What is implemented
+
+- Photo upload with JPEG/PNG validation and a 5 MB limit.
+- Food-101 image classification with a Hugging Face ViT model running on CPU.
+- Top-3 predictions and a confidence score.
+- Uncertainty handling: below 40% confidence the API skips the LLM and returns no recipe.
+- AI recipe generation through any OpenAI-compatible chat-completions endpoint.
+- PostgreSQL persistence through SQLAlchemy and Alembic.
+- Result page with prediction bars, checkable ingredients, numbered steps and delete confirmation.
+- History endpoints: list, read and delete analyses.
+- Uploaded images served back to the frontend from `/uploads`.
+- Frontend mock mode for UI work without the API.
 
 ## Stack
 
-| Layer    | Technology                                                                                                  |
-| -------- | ----------------------------------------------------------------------------------------------------------- |
-| Frontend | React 18, Vite 5, TypeScript, Tailwind CSS 3, react-router-dom, TanStack Query, react-dropzone, lucide-react |
-| Backend  | FastAPI, Pydantic v2, pydantic-settings, SQLAlchemy 2, Alembic, psycopg 3, Pillow, httpx, pytest             |
-| ML       | transformers + PyTorch (CPU-only wheel) for a Hugging Face Food-101 classifier                               |
-| Database | PostgreSQL 16                                                                                                |
-| Runtime  | Docker Compose (`db`, `api`, `web`)                                                                          |
+| Layer    | Technology                                                                                        |
+| -------- | ------------------------------------------------------------------------------------------------- |
+| Frontend | React 18, Vite 5, TypeScript, Tailwind CSS 3, React Router, TanStack Query, react-dropzone        |
+| Backend  | FastAPI, Pydantic v2, SQLAlchemy 2, Alembic, psycopg 3, Pillow, httpx                              |
+| ML       | transformers + PyTorch (CPU wheel), `nateraw/food` Food-101 classifier                            |
+| LLM      | OpenAI-compatible chat completions API (OpenAI by default, configurable base URL)                 |
+| Database | PostgreSQL 16                                                                                     |
+| Runtime  | Docker Compose (`db`, `api`, `web`)                                                               |
 
-## Project structure
+## Architecture
 
+```text
+                        Browser (React + Vite)
+                     http://localhost:5173
+                             |
+              /api/*  and  /uploads/*  (Vite proxy)
+                             |
+                             v
+                  FastAPI  http://api:8000
+                 /api/analyze   /api/history
+                             |
+        +--------------------+---------------------+
+        |                    |                     |
+        v                    v                     v
+  Pillow validation     Food-101 ViT          SQLAlchemy 2
+  (JPEG/PNG, <=5MB)     (CPU, in-process)     + psycopg 3
+                             |                     |
+                             | top-3 + score       v
+                             |               PostgreSQL 16
+                             v               (analyses table)
+                   confidence < 0.40 ?
+                    /             \
+                  yes              no
+                  /                 \
+        uncertain response     Recipe prompt
+        (no recipe)                 |
+                                    v
+                         OpenAI-compatible LLM
+                         (JSON ingredients + steps)
+                                    |
+                                    v
+                     save row + image, return AnalysisOut
+
+  Uploaded files: backend/uploads/  ->  served at /uploads/<uuid>.<ext>
 ```
-foodlens/
-  docker-compose.yml
-  .env.example
-  .gitignore
-  README.md
-  design/                     # Stitch exports go here
-  backend/
-    Dockerfile
-    requirements.txt
-    alembic.ini
-    alembic/
-    app/
-      main.py                 # FastAPI app, CORS, lifespan DB check, GET /api/health
-      core/config.py          # Settings read from environment variables
-      api/routes.py           # empty router, included under /api
-      db/session.py           # engine, SessionLocal, get_db
-      db/models.py            # Declarative Base (no tables yet)
-      ml/                     # empty package for the classifier
-      schemas.py
-    tests/test_health.py
-    uploads/                  # saved images (gitignored)
-  frontend/
-    Dockerfile
-    package.json
-    vite.config.ts            # proxies /api to the backend
-    tailwind.config.js
-    src/
-      main.tsx
-      App.tsx                 # routes: Upload, Result, History
-      pages/
-      components/
-      api/client.ts
-      lib/
-```
 
-## Quick start
+Request flow:
+
+1. The browser posts a multipart image to `POST /api/analyze`.
+2. The API validates size and format, runs the classifier, and keeps the top 3 labels.
+3. If the top score is at least 0.40, it asks the LLM for a JSON recipe with 6-12 quantified ingredients and 4-8 steps.
+4. The analysis row is saved in PostgreSQL; the image is saved under `backend/uploads`.
+5. The browser loads the result from `GET /api/history/{id}` and displays the image from `/uploads`.
+
+## Quick start (under 10 minutes)
+
+### Prerequisites
+
+- Docker Desktop (Compose v2) with at least 4 GB of free disk space.
+- An API key for an OpenAI-compatible LLM, or a local OpenAI-compatible server.
+- Two food photos for a manual test (JPG or PNG, under 5 MB each).
+
+### Steps
 
 ```bash
+git clone https://github.com/Skander-Bardaoui/foodlens.git
+cd foodlens
 cp .env.example .env
+```
+
+Open `.env` and set one of:
+
+```dotenv
+# OpenAI
+LLM_API_KEY=sk-...
+
+# or any OpenAI-compatible endpoint
+LLM_BASE_URL=http://host.docker.internal:11434/v1
+LLM_API_KEY=local
+LLM_MODEL=your-model
+```
+
+Start the stack:
+
+```bash
 docker compose up --build
 ```
 
-| Service  | URL                             |
-| -------- | ------------------------------- |
-| Frontend | http://localhost:5173           |
-| API      | http://localhost:8000/api/health |
-| Database | internal only (`db:5432`)       |
+Then open:
 
-The API container waits for PostgreSQL to pass its healthcheck, runs
-`alembic upgrade head`, then starts uvicorn with `--reload`. On startup it logs a
-line like `Connected to PostgreSQL at postgresql+psycopg://foodlens:***@db:5432/foodlens`.
+| Service   | URL                            |
+| --------- | ------------------------------ |
+| App       | http://localhost:5173          |
+| API docs  | http://localhost:8000/docs     |
+| Health    | http://localhost:8000/api/health |
 
-Change the defaults by editing `.env` — keep `DATABASE_URL` credentials in sync with
-`POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB`.
+Expected timing on a normal connection:
 
-## Commands
+| Step                                  | Time        |
+| ------------------------------------- | ----------- |
+| Image build (first time)              | 2-4 minutes |
+| Containers start, migrations run      | under 30 s  |
+| First analysis (model download/cache) | 1-3 minutes |
+| Later analyses                        | 1-3 seconds |
 
-```bash
-# Start / rebuild everything
-docker compose up --build
+The API container waits for PostgreSQL, runs `alembic upgrade head`, then loads the classifier. The model is cached in the `foodlens_hf_cache` volume, so it is downloaded once.
 
-# Start in the background
-docker compose up -d --build
+If ports 5173 or 8000 are already in use, set `WEB_PORT` and `API_PORT` in `.env` and use those ports instead.
 
-# Migrations (also run automatically by the api container)
-docker compose exec api alembic upgrade head
-docker compose exec api alembic revision --autogenerate -m "your message"
-
-# Backend tests
-docker compose exec api pytest
-
-# Shells
-docker compose exec api sh
-docker compose exec db psql -U foodlens -d foodlens
-
-# Logs
-docker compose logs -f api
-docker compose logs -f web
-
-# Stop (keep the database volume) / stop and wipe data
-docker compose down
-docker compose down -v
-```
-
-### Running without Docker
+To stop:
 
 ```bash
-# Backend (Python 3.11)
-cd backend
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-# CPU-only torch, if you don't want the default PyPI build:
-# pip install --index-url https://download.pytorch.org/whl/cpu torch
-export DATABASE_URL=postgresql+psycopg://foodlens:foodlens@localhost:5432/foodlens
-alembic upgrade head
-uvicorn app.main:app --reload --port 8000
-pytest
-
-# Frontend
-cd frontend
-npm install
-npm run dev    # http://localhost:5173, proxies /api to http://localhost:8000
+docker compose down        # keep data
+docker compose down -v     # also delete PostgreSQL and model caches
 ```
-
-If PostgreSQL is not reachable at `localhost:5432`, set `DATABASE_URL` accordingly
-(the Compose URL uses the `db` hostname and only works inside the Docker network).
 
 ## Configuration
 
-All backend configuration comes from environment variables via `app/core/config.py`
-(`Settings`). `.env.example` documents every variable:
+| Variable         | Default                                                     | Purpose                                              |
+| ---------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
+| `DATABASE_URL`   | `postgresql+psycopg://foodlens:foodlens@db:5432/foodlens`   | SQLAlchemy URL used by the API and Alembic           |
+| `HF_MODEL_ID`    | `nateraw/food`                                              | Hugging Face Food-101 classifier                     |
+| `LLM_PROVIDER`   | `openai`                                                    | Provider name; `openai` is built in                  |
+| `LLM_API_KEY`    | empty                                                       | Required for recipe generation                       |
+| `LLM_MODEL`      | `gpt-4o-mini`                                               | Model name sent to the LLM                           |
+| `LLM_BASE_URL`   | empty                                                       | Override for a local or self-hosted OpenAI API       |
+| `MAX_UPLOAD_MB`  | `5`                                                         | Server-side upload limit; keep in sync with the UI   |
+| `UPLOAD_DIR`     | `uploads`                                                   | Image storage directory inside the API container     |
+| `CORS_ORIGINS`   | `http://localhost:5173`                                     | Comma-separated allowed browser origins              |
+| `API_PORT`       | `8000`                                                      | Host port mapped to the API container                |
+| `WEB_PORT`       | `5173`                                                      | Host port mapped to the Vite dev server              |
+| `VITE_USE_MOCK`  | `false`                                                     | `true` serves frontend mock data instead of the API  |
 
-- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` — database credentials
-- `DATABASE_URL` — SQLAlchemy URL used by the app and Alembic
-- `HF_MODEL_ID` — Hugging Face Food-101 classifier, default `nateraw/food`
-- `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_MODEL` — optional LLM enrichment layer
-- `CORS_ORIGINS` — comma-separated allowed frontend origins
-- `MAX_UPLOAD_MB`, `UPLOAD_DIR` — upload limits and storage directory
+## API
 
-No secret is hardcoded; `LLM_API_KEY` is optional and stored as a `SecretStr`.
+| Method   | Path                       | Description                                      |
+| -------- | -------------------------- | ------------------------------------------------ |
+| `GET`    | `/api/health`              | Health check                                     |
+| `POST`   | `/api/analyze`             | Multipart image upload; returns the analysis     |
+| `GET`    | `/api/history?limit=20`    | Recent analyses, newest first                    |
+| `GET`    | `/api/history/{id}`        | One analysis                                     |
+| `DELETE` | `/api/history/{id}`        | Delete an analysis                               |
+| `GET`    | `/uploads/{filename}`      | Stored image                                     |
 
-## Notes
+Errors use the envelope `{"error": {"code": "...", "message": "..."}}`. `POST /api/analyze` returns 400 for invalid images, 413 for files over the limit, and 502 when recipe generation fails.
 
-- The Docker image installs PyTorch from `https://download.pytorch.org/whl/cpu`, so no
-  CUDA runtime is pulled in. The first classification request will download the
-  Hugging Face model into the image's cache.
-- PostgreSQL has no host port mapping; use `docker compose exec db psql ...` or add a
-  `ports` entry if you need external access (it may conflict with a local server on 5432).
-- Uploaded images live in `backend/uploads` (bind-mounted and gitignored).
-- `design/` is empty; drop the Stitch exports there.
+## Tests
+
+Backend tests use an in-memory SQLite database and mocked classifier/LLM responses:
+
+```bash
+docker compose exec api pytest
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm run build
+```
+
+Frontend mock mode, useful when the API or LLM is not available:
+
+```bash
+cd frontend
+VITE_USE_MOCK=true npm run dev
+```
+
+## Project structure
+
+```text
+foodlens/
+  docker-compose.yml
+  .env.example
+  README.md
+  DEMO.md
+  design/                         # Stitch design exports
+  backend/
+    Dockerfile
+    requirements.txt
+    alembic/
+      versions/20261109_0001_create_analyses.py
+    app/
+      main.py                     # FastAPI app, lifespan, /uploads mount
+      core/config.py              # environment settings
+      api/analyze.py              # POST /api/analyze
+      api/history.py              # GET/DELETE history, GET list
+      db/models.py                # Analysis table
+      db/repository.py            # create/get/list/delete
+      db/session.py               # engine, SessionLocal, get_db
+      ml/classifier.py            # Food-101 ViT wrapper
+      ml/image_utils.py           # validation and size checks
+      ml/recipe.py                # LLM client and recipe parsing
+      schemas.py                  # Pydantic response models
+    tests/
+    uploads/                      # stored images (gitignored)
+  frontend/
+    Dockerfile
+    vite.config.ts                # proxies /api and /uploads
+    src/
+      api/analyze.ts              # upload client + mock mode
+      api/history.ts              # history client
+      pages/UploadPage.tsx
+      pages/ResultPage.tsx
+      components/AnalyzingView.tsx
+```
+
+## Known limitations
+
+- **Only 101 dish types.** The classifier is Food-101, so it can only return one of 101 labels. A non-food photo still gets the closest food label; the app mitigates this by treating scores below 40% as uncertain and skipping the recipe.
+- **LLM recipes may be inaccurate.** Ingredients, quantities and cooking times are generated text, not verified culinary data. Always review them before cooking.
+- Single-user local app: no authentication, accounts, rate limiting or per-user history.
+- Uploaded images are stored on local disk and are not cleaned up automatically. Deleting an analysis removes its database row but not the image file.
+- The History page UI is still a placeholder; the history API is implemented.
+- JPEG and PNG only, maximum 5 MB. Large high-resolution phone photos may need resizing.
+- CPU-only inference. The first request downloads the model; later requests are faster but still slower than GPU inference.
+- The LLM is required for confident predictions. Without `LLM_API_KEY` (or a reachable `LLM_BASE_URL`), analyses return `502 LLM_FAILURE`.
+
+## Demo
+
+See [DEMO.md](DEMO.md) for a 2-minute walkthrough with the order of screens.

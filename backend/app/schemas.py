@@ -28,3 +28,12 @@ class AnalysisOut(BaseModel):
     steps: list[str]
     image_url: str
     created_at: datetime
+
+
+class ErrorDetail(BaseModel):
+    code: str
+    message: str
+
+
+class ErrorResponse(BaseModel):
+    error: ErrorDetail

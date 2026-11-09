@@ -1,9 +1,11 @@
 import asyncio
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.api.analyze import router as analyze_router
@@ -11,6 +13,7 @@ from app.api.history import router as history_router
 from app.api.routes import router as api_router
 from app.core.config import settings
 from app.db.session import engine
+from app.ml.classifier import ImageClassifier
 from app.schemas import HealthResponse
 
 logger = logging.getLogger("foodlens")
@@ -43,6 +46,10 @@ async def lifespan(app: FastAPI):
             else:
                 await asyncio.sleep(DB_CONNECT_DELAY_SECONDS)
 
+    logger.info("Loading image classifier %s", settings.hf_model_id)
+    app.state.classifier = ImageClassifier()
+    logger.info("Image classifier ready")
+
     yield
 
     engine.dispose()
@@ -61,6 +68,9 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api")
 app.include_router(analyze_router, prefix="/api")
 app.include_router(history_router, prefix="/api")
+
+Path(settings.upload_dir).mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=settings.upload_dir), name="uploads")
 
 
 @app.get("/api/health", response_model=HealthResponse, tags=["health"])
