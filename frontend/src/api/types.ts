@@ -3,11 +3,6 @@ export type Top3Item = {
   score: number;
 };
 
-export type Recipe = {
-  ingredients: string[];
-  steps: string[];
-};
-
 export type Analysis = {
   id: string;
   label: string;
